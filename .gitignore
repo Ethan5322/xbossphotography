@@ -30,3 +30,8 @@ Thumbs.db
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts
+
+memory/
+.claude/
+*.tsbuildinfo
+
