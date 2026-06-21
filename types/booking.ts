@@ -51,6 +51,7 @@ export type BookingStep =
   | 'event_date'
   | 'event_time'
   | 'package'
+  | 'review'
   | 'terms'
   | 'processing'
   | 'complete'

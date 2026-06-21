@@ -1,11 +1,13 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Send, Download, CheckCircle, AlertCircle } from 'lucide-react';
+import { Send, Download, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import { Aperture } from 'lucide-react';
 import { MessageBubble } from './MessageBubble';
 import { TypingIndicator } from './TypingIndicator';
 import { EventTypeOptions, PackageOptions, TermsBox } from './OptionButtons';
+import { DatePicker, TimePicker } from './DateTimePicker';
+import { ReviewCard } from './ReviewCard';
 import type { BookingStep, ChatMessage, CollectedData } from '@/types/booking';
 
 let msgCounter = 0;
@@ -16,29 +18,57 @@ interface CompletedBooking {
   verification_code: string;
 }
 
+// ── Progress phases ─────────────────────────────────────────────────────────────
+const PHASES: { label: string; steps: BookingStep[] }[] = [
+  { label: 'Your Details', steps: ['name', 'phone', 'email'] },
+  { label: 'Location',     steps: ['country', 'province', 'area'] },
+  { label: 'Event',        steps: ['event_type', 'custom_event', 'event_date', 'event_time'] },
+  { label: 'Package',      steps: ['package'] },
+  { label: 'Review',       steps: ['review'] },
+  { label: 'Confirmation', steps: ['terms', 'processing', 'complete'] },
+];
+
+const ORDERED: BookingStep[] = ['name', 'phone', 'email', 'country', 'province', 'area', 'event_type', 'event_date', 'event_time', 'package', 'review', 'terms'];
+
+const EDIT_LABELS: Partial<Record<BookingStep, string>> = {
+  name: 'full name', phone: 'phone number', email: 'email address',
+  country: 'country', province: 'province', area: 'area',
+  event_type: 'event type', event_date: 'event date', event_time: 'arrival time',
+  package: 'package',
+};
+
 export function ChatInterface() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [step, setStep] = useState<BookingStep>('greeting');
   const [data, setData] = useState<CollectedData>({});
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [editing, setEditing] = useState(false);
   const [completed, setCompleted] = useState<CompletedBooking | null>(null);
   const [fatalError, setFatalError] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const initialized = useRef(false);
 
-  const scrollToBottom = () => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
+  const scrollToBottom = () => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); };
   useEffect(() => { scrollToBottom(); }, [messages, loading]);
 
   const addMessage = useCallback((role: ChatMessage['role'], content: string) => {
     setMessages((prev) => [...prev, { id: newId(), role, content, timestamp: new Date(), messageType: 'text' }]);
   }, []);
 
-  const callChat = useCallback(async (currentStep: BookingStep, userInput: string | undefined, currentData: CollectedData) => {
+  // Prefill +27 when entering the phone step fresh
+  useEffect(() => {
+    if (step === 'phone' && !editing && input === '') setInput('+27 ');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step]);
+
+  const callChat = useCallback(async (
+    currentStep: BookingStep,
+    userInput: string | undefined,
+    currentData: CollectedData,
+    isEdit: boolean,
+  ) => {
     setLoading(true);
     try {
       const res = await fetch('/api/chat', {
@@ -48,10 +78,32 @@ export function ChatInterface() {
       });
       if (!res.ok) throw new Error('Chat API error');
       const json = await res.json();
-      addMessage('assistant', json.message);
       const updatedData: CollectedData = { ...currentData, ...json.updatedData };
       setData(updatedData);
-      if (json.valid) setStep(json.nextStep as BookingStep);
+
+      // Invalid input — show retry, stay on the same step
+      if (!json.valid) {
+        addMessage('assistant', json.message);
+        setTimeout(() => inputRef.current?.focus(), 100);
+        return;
+      }
+
+      if (isEdit) {
+        // Editing a single field, then return to the review summary
+        if (currentStep === 'event_type' && updatedData.event_type === 'Custom') {
+          addMessage('assistant', 'Of course — please describe your event in your own words.');
+          setStep('custom_event'); // remain in edit mode for the description
+        } else {
+          addMessage('assistant', 'Perfect — your booking summary has been updated below.');
+          setEditing(false);
+          setStep('review');
+        }
+        return;
+      }
+
+      // Normal forward flow — intercept the jump to terms with a review step
+      addMessage('assistant', json.message);
+      setStep(json.nextStep === 'terms' ? 'review' : (json.nextStep as BookingStep));
       setTimeout(() => inputRef.current?.focus(), 100);
     } catch {
       addMessage('assistant', 'I apologise — something went wrong on my end. Please try sending your message again.');
@@ -63,7 +115,7 @@ export function ChatInterface() {
   useEffect(() => {
     if (initialized.current) return;
     initialized.current = true;
-    callChat('greeting', undefined, {});
+    callChat('greeting', undefined, {}, false);
   }, [callChat]);
 
   const handleSend = async () => {
@@ -71,7 +123,7 @@ export function ChatInterface() {
     if (!trimmed || loading) return;
     addMessage('user', trimmed);
     setInput('');
-    await callChat(step, trimmed, data);
+    await callChat(step, trimmed, data, editing);
   };
 
   const handleOptionSelect = async (value: string, displayValue?: string) => {
@@ -80,7 +132,40 @@ export function ChatInterface() {
     let updatedData = { ...data };
     if (step === 'event_type') updatedData = { ...updatedData, event_type: value };
     if (step === 'package') updatedData = { ...updatedData, package: value as CollectedData['package'] };
-    await callChat(step, value, updatedData);
+    await callChat(step, value, updatedData, editing);
+  };
+
+  const handleDateSelect = async (iso: string, display: string) => {
+    if (loading) return;
+    addMessage('user', display);
+    await callChat('event_date', iso, { ...data, event_date: iso }, editing);
+  };
+
+  const handleTimeSelect = async (time: string, display: string) => {
+    if (loading) return;
+    addMessage('user', display);
+    await callChat('event_time', time, { ...data, event_time: time }, editing);
+  };
+
+  const handleEdit = (targetStep: BookingStep) => {
+    if (loading) return;
+    setEditing(true);
+    setStep(targetStep);
+    const label = EDIT_LABELS[targetStep] ?? 'detail';
+    addMessage('assistant', `Sure — please update your ${label} below.`);
+    // Prefill the input for text-based fields
+    const textPrefill: Partial<Record<BookingStep, string | undefined>> = {
+      name: data.full_name, phone: data.phone, email: data.email,
+      country: data.country, province: data.province, area: data.area,
+    };
+    setInput(textPrefill[targetStep] ?? '');
+  };
+
+  const handleConfirmReview = () => {
+    if (loading) return;
+    addMessage('user', 'My details are correct — please continue.');
+    addMessage('assistant', 'Thank you for confirming. Just one final step — please review and accept our Terms and Conditions below to secure your booking.');
+    setStep('terms');
   };
 
   const handleTermsAccept = async () => {
@@ -125,37 +210,53 @@ export function ChatInterface() {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
   };
 
-  const showInput = !['event_type', 'package', 'terms', 'processing', 'complete', 'error', 'greeting'].includes(step) && !loading;
-  const showEventOptions  = step === 'event_type' && !loading;
+  // ── What to render below the messages ─────────────────────────────────────
+  const showInput        = ['name', 'phone', 'email', 'country', 'province', 'area', 'custom_event'].includes(step) && !loading;
+  const showEventOptions = step === 'event_type' && !loading;
   const showPackageOptions = step === 'package' && !loading;
-  const showTerms          = step === 'terms' && !loading;
+  const showDatePicker   = step === 'event_date' && !loading;
+  const showTimePicker   = step === 'event_time' && !loading;
+  const showReview       = step === 'review' && !loading;
+  const showTerms        = step === 'terms' && !loading;
 
-  const progressSteps: BookingStep[] = ['name', 'phone', 'email', 'country', 'province', 'area', 'event_type', 'event_date', 'event_time', 'package', 'terms'];
-  const currentIdx  = progressSteps.indexOf(step);
-  const progressPct = currentIdx >= 0 ? Math.round(((currentIdx + 1) / progressSteps.length) * 100)
+  // ── Progress ───────────────────────────────────────────────────────────────
+  const idxStep   = step === 'custom_event' ? 'event_type' : step;
+  const currentIdx = ORDERED.indexOf(idxStep as BookingStep);
+  const progressPct = currentIdx >= 0 ? Math.round(((currentIdx + 1) / ORDERED.length) * 100)
                     : step === 'complete' ? 100 : 0;
+  const phaseLabel = PHASES.find((p) => p.steps.includes(step))?.label ?? '';
+  const showProgress = !['greeting', 'error'].includes(step) && step !== 'complete';
 
   return (
     <div className="flex flex-col h-full">
 
-      {/* ── Progress bar ─────────────────────────────────────── */}
-      {step !== 'complete' && step !== 'error' && step !== 'greeting' && (
-        <div className="w-full h-px bg-[#1C1914]">
-          <div
-            className="h-full bg-gold transition-all duration-700 ease-out"
-            style={{ width: `${progressPct}%` }}
-          />
+      {/* ── Progress header ─────────────────────────────────────── */}
+      {showProgress && (
+        <div className="px-5 pt-3 pb-2">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] text-gold/80 tracking-[0.24em] uppercase font-medium">
+              {editing ? 'Editing Details' : phaseLabel}
+            </span>
+            <span className="text-[10px] text-[#4A4540] tracking-[0.18em] uppercase tabular-nums">
+              {progressPct}%
+            </span>
+          </div>
+          <div className="w-full h-[3px] rounded-full bg-[#1C1914] overflow-hidden">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-gold/70 to-gold transition-all duration-700 ease-out"
+              style={{ width: `${progressPct}%` }}
+            />
+          </div>
         </div>
       )}
 
-      {/* ── Messages ─────────────────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto px-5 pt-8 pb-4 space-y-5">
+      {/* ── Messages ─────────────────────────────────────────────── */}
+      <div className="flex-1 overflow-y-auto px-5 pt-6 pb-4 space-y-5">
 
         {messages.map((msg) => (
           <MessageBubble key={msg.id} message={msg} />
         ))}
 
-        {/* Typing indicator */}
         {loading && (
           <div className="flex items-start gap-3 animate-fade-in">
             <div className="flex-shrink-0 w-7 h-7 mt-0.5 rounded-lg border border-gold/25 bg-gold/10
@@ -166,7 +267,6 @@ export function ChatInterface() {
           </div>
         )}
 
-        {/* Inline option panels */}
         {showEventOptions && (
           <div className="pl-10">
             <EventTypeOptions onSelect={(v) => handleOptionSelect(v)} disabled={loading} />
@@ -177,13 +277,28 @@ export function ChatInterface() {
             <PackageOptions onSelect={(v) => handleOptionSelect(v, v.replace('_', ' '))} disabled={loading} />
           </div>
         )}
+        {showDatePicker && (
+          <div className="pl-10 w-full pr-1">
+            <DatePicker onSelect={handleDateSelect} disabled={loading} />
+          </div>
+        )}
+        {showTimePicker && (
+          <div className="pl-10 w-full pr-1">
+            <TimePicker onSelect={handleTimeSelect} disabled={loading} />
+          </div>
+        )}
+        {showReview && (
+          <div className="pl-10 w-full pr-1">
+            <ReviewCard data={data} onConfirm={handleConfirmReview} onEdit={handleEdit} disabled={loading} />
+          </div>
+        )}
         {showTerms && (
           <div className="pl-10 w-full pr-1">
             <TermsBox onAccept={handleTermsAccept} onDecline={handleTermsDecline} disabled={loading} />
           </div>
         )}
 
-        {/* ── Booking confirmed card ─────────────────────────── */}
+        {/* ── Booking confirmed card ─────────────────────────────── */}
         {step === 'complete' && completed && (
           <div className="pl-10 animate-slide-up">
             <div className="bg-[#0F0E0C] border border-[#2C2820] rounded-2xl p-5 max-w-xs">
@@ -234,21 +349,21 @@ export function ChatInterface() {
         <div ref={bottomRef} />
       </div>
 
-      {/* ── Input area ───────────────────────────────────────── */}
+      {/* ── Input area ───────────────────────────────────────────── */}
       <div className="flex-shrink-0 relative px-5 pb-5 pt-2">
-        {/* Fade out scroll content behind input */}
         <div className="absolute inset-x-0 -top-8 h-8 bg-gradient-to-b from-transparent to-[#0D0C0B] pointer-events-none" />
 
         {showInput ? (
           <div className="flex items-center gap-3">
             <input
               ref={inputRef}
-              type="text"
+              type={step === 'email' ? 'email' : step === 'phone' ? 'tel' : 'text'}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Type your reply…"
+              placeholder={step === 'phone' ? '+27 82 123 4567' : step === 'email' ? 'you@example.com' : 'Type your reply…'}
               disabled={loading}
+              autoFocus
               className="flex-1 bg-[#141210] border border-[#2C2820] rounded-full
                          px-5 py-3.5 text-sm text-[#D4CEBD] placeholder-[#3A3530]
                          focus:outline-none focus:border-gold/45
@@ -265,15 +380,19 @@ export function ChatInterface() {
                          transition-all duration-200
                          disabled:opacity-25 disabled:cursor-not-allowed disabled:shadow-none"
             >
-              <Send className="w-4 h-4 text-[#0D0C0B]" strokeWidth={2.5} />
+              {loading
+                ? <Loader2 className="w-4 h-4 text-[#0D0C0B] animate-spin" strokeWidth={2.5} />
+                : <Send className="w-4 h-4 text-[#0D0C0B]" strokeWidth={2.5} />}
             </button>
           </div>
         ) : (
           <p className="text-center text-[10px] text-[#3A3530] tracking-[0.22em] uppercase py-2">
-            {step === 'complete'   ? '✦  Booking confirmed  —  save your verification code  ✦'
-            : step === 'processing' ? 'Processing your booking…'
-            : step === 'error'      ? 'Session ended'
-            :                         'Select an option above to continue'}
+            {step === 'complete'    ? '✦  Booking confirmed  —  save your verification code  ✦'
+            : step === 'processing'  ? 'Securing your booking…'
+            : step === 'error'       ? 'Session ended'
+            : step === 'review'      ? 'Review your details above, then confirm'
+            : step === 'terms'       ? 'Please read and accept the terms above'
+            :                          'Select an option above to continue'}
           </p>
         )}
       </div>
