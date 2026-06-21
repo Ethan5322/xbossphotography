@@ -8,6 +8,7 @@ import { TypingIndicator } from './TypingIndicator';
 import { EventTypeOptions, PackageOptions, TermsBox } from './OptionButtons';
 import { DatePicker, TimePicker } from './DateTimePicker';
 import { ReviewCard } from './ReviewCard';
+import { processChatStep } from '@/lib/chat-script';
 import type { BookingStep, ChatMessage, CollectedData } from '@/types/booking';
 
 let msgCounter = 0;
@@ -71,46 +72,42 @@ export function ChatInterface() {
     isEdit: boolean,
   ) => {
     setLoading(true);
-    try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ step: currentStep, userInput, data: currentData }),
-      });
-      if (!res.ok) throw new Error('Chat API error');
-      const json = await res.json();
-      const updatedData: CollectedData = { ...currentData, ...json.updatedData };
-      setData(updatedData);
 
-      // Invalid input — show retry, stay on the same step
-      if (!json.valid) {
-        addMessage('assistant', json.message);
-        setTimeout(() => inputRef.current?.focus(), 100);
-        return;
-      }
+    // The bot is fully scripted, so the response is computed instantly on the
+    // client — a brief pause just keeps the typing indicator feeling natural.
+    await new Promise((resolve) => setTimeout(resolve, 240));
 
-      if (isEdit) {
-        // Editing a single field, then return to the review summary
-        if (currentStep === 'event_type' && updatedData.event_type === 'Custom') {
-          addMessage('assistant', 'Of course — please describe your event in your own words.');
-          setStep('custom_event'); // remain in edit mode for the description
-        } else {
-          addMessage('assistant', 'Perfect — your booking summary has been updated below.');
-          setEditing(false);
-          setStep('review');
-        }
-        return;
-      }
+    const result = processChatStep(currentStep, userInput, currentData);
+    const updatedData: CollectedData = { ...currentData, ...result.updatedData };
+    setData(updatedData);
 
-      // Normal forward flow — intercept the jump to terms with a review step
-      addMessage('assistant', json.message);
-      setStep(json.nextStep === 'terms' ? 'review' : (json.nextStep as BookingStep));
-      setTimeout(() => inputRef.current?.focus(), 100);
-    } catch {
-      addMessage('assistant', 'I apologise — something went wrong on my end. Please try sending your message again.');
-    } finally {
+    // Invalid input — show retry, stay on the same step
+    if (!result.valid) {
+      addMessage('assistant', result.message);
       setLoading(false);
+      setTimeout(() => inputRef.current?.focus(), 50);
+      return;
     }
+
+    if (isEdit) {
+      // Editing a single field, then return to the review summary
+      if (currentStep === 'event_type' && updatedData.event_type === 'Custom') {
+        addMessage('assistant', 'Of course — please describe your event in your own words.');
+        setStep('custom_event'); // remain in edit mode for the description
+      } else {
+        addMessage('assistant', 'Perfect — your booking summary has been updated below.');
+        setEditing(false);
+        setStep('review');
+      }
+      setLoading(false);
+      return;
+    }
+
+    // Normal forward flow — intercept the jump to terms with a review step
+    addMessage('assistant', result.message);
+    setStep(result.nextStep === 'terms' ? 'review' : result.nextStep);
+    setLoading(false);
+    setTimeout(() => inputRef.current?.focus(), 50);
   }, [addMessage]);
 
   useEffect(() => {
