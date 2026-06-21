@@ -48,6 +48,7 @@ export function ChatInterface() {
   const [completed, setCompleted] = useState<CompletedBooking | null>(null);
   const [fatalError, setFatalError] = useState<string | null>(null);
   const [closed, setClosed] = useState(false);
+  const [cancelled, setCancelled] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const initialized = useRef(false);
@@ -199,9 +200,9 @@ export function ChatInterface() {
   };
 
   const handleTermsDecline = () => {
-    addMessage('user', 'I decline the Terms and Conditions.');
-    addMessage('assistant', `That is completely fine — your booking has not been submitted and no details have been saved. If you change your mind, you are welcome to start a new session at any time. We would love to work with you.`);
-    setStep('error');
+    if (loading) return;
+    // No booking is created — simply cancel and exit the chatbot entirely.
+    setCancelled(true);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -231,6 +232,26 @@ export function ChatInterface() {
                     : step === 'complete' ? 100 : 0;
   const phaseLabel = PHASES.find((p) => p.steps.includes(step))?.label ?? '';
   const showProgress = !['greeting', 'error'].includes(step) && step !== 'complete';
+
+  // ── Cancelled screen (after Decline) ───────────────────────────────────────
+  if (cancelled) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full px-6 text-center animate-fade-in">
+        <div className="w-14 h-14 rounded-2xl border border-red-900/40 bg-red-950/20 flex items-center justify-center mb-6">
+          <X className="w-7 h-7 text-red-500/70" strokeWidth={1.5} />
+        </div>
+        <h2 className="font-playfair text-[#C8C0B0] text-xl font-semibold mb-3">
+          Booking Cancelled
+        </h2>
+        <p className="text-[#9A9488] text-sm leading-relaxed max-w-xs mb-1">
+          Your booking has been cancelled. No details were submitted or saved.
+        </p>
+        <p className="text-[#524E46] text-xs leading-relaxed max-w-xs">
+          You may now close this window. If you change your mind, you are always welcome to book with us again.
+        </p>
+      </div>
+    );
+  }
 
   // ── Farewell screen (after Finish & Close) ─────────────────────────────────
   if (closed) {

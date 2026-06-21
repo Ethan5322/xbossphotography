@@ -2,7 +2,6 @@
 
 import { PACKAGES } from '@/lib/packages';
 import { TERMS_AND_CONDITIONS } from '@/lib/terms';
-import { useState, useRef, useEffect } from 'react';
 
 const EVENT_TYPES = ['Wedding', 'Birthday', 'Graduation', 'Anniversary', 'Custom'];
 
@@ -74,45 +73,29 @@ interface TermsBoxProps {
 }
 
 export function TermsBox({ onAccept, onDecline, disabled }: TermsBoxProps) {
-  const [scrolledToBottom, setScrolledToBottom] = useState(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const handler = () => {
-      if (el.scrollTop + el.clientHeight >= el.scrollHeight - 10) setScrolledToBottom(true);
-    };
-    el.addEventListener('scroll', handler);
-    return () => el.removeEventListener('scroll', handler);
-  }, []);
-
   return (
     <div className="w-full mt-3 animate-fade-in">
       <div
-        ref={scrollRef}
         className="h-48 overflow-y-auto rounded-xl border border-[#252218] bg-[#0C0B09] p-4
                    text-xs text-[#605A50] leading-[1.85] whitespace-pre-wrap"
       >
         {TERMS_AND_CONDITIONS}
       </div>
 
-      {!scrolledToBottom && (
-        <p className="text-[10px] text-[#3A3530] mt-1.5 text-center tracking-[0.2em] uppercase">
-          Scroll to read all terms before accepting
-        </p>
-      )}
+      <p className="text-[10px] text-[#3A3530] mt-1.5 text-center tracking-[0.2em] uppercase">
+        Please read the terms above
+      </p>
 
       <div className="flex gap-3 mt-3">
         <button
           onClick={onAccept}
-          disabled={disabled || !scrolledToBottom}
+          disabled={disabled}
           className="flex-1 py-3 rounded-xl bg-gold text-[#0D0C0B] font-semibold text-sm tracking-wide
                      hover:bg-gold-light hover:shadow-[0_0_20px_rgba(201,168,76,0.28)]
                      transition-all duration-200
-                     disabled:opacity-30 disabled:cursor-not-allowed"
+                     disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          I Accept the Terms & Conditions
+          I Accept the Terms &amp; Conditions
         </button>
         <button
           onClick={onDecline}
