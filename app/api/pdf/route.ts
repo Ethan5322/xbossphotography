@@ -24,11 +24,11 @@ export async function GET(req: NextRequest) {
   }
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000';
-  const verifyUrl = `${baseUrl}/admin/verify?code=${booking.verification_code}`;
 
-  const qrDataUrl = await QRCode.toDataURL(verifyUrl, {
-    width: 160,
-    margin: 1,
+  // Company QR — points to the booking chatbot homepage
+  const qrDataUrl = await QRCode.toDataURL(baseUrl, {
+    width: 200,
+    margin: 2,
     color: { dark: '#0D0D0D', light: '#FFFFFF' },
   });
 

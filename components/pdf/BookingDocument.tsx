@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Document,
   Page,
@@ -9,33 +8,34 @@ import {
 } from '@react-pdf/renderer';
 import type { Booking } from '@/types/booking';
 import { getPackageById } from '@/lib/packages';
+import { TERMS_AND_CONDITIONS } from '@/lib/terms';
 import { format } from 'date-fns';
 
-// ── Palette ───────────────────────────────────────────────────────────────────
+// ── Palette ────────────────────────────────────────────────────────────────────
 const C = {
-  black:      '#0D0C0B',
-  charcoal:   '#141210',
-  white:      '#FFFFFF',
-  pageBg:     '#F9F7F4',   // warm stationery off-white
-  lightBg:    '#F0EDE8',   // slightly darker off-white for terms
-  gold:       '#C9A84C',
-  bodyText:   '#1C1A17',   // very dark warm — primary text
-  subText:    '#6A6458',   // secondary/muted text
-  labelText:  '#A09888',   // field labels
-  cardBorder: '#DDD8CE',   // warm light border
+  black:     '#0D0C0B',
+  charcoal:  '#141210',
+  white:     '#FFFFFF',
+  pageBg:    '#F9F7F4',
+  lightBg:   '#F0EDE8',
+  qrBg:      '#1A1816',
+  gold:      '#C9A84C',
+  bodyText:  '#1C1A17',
+  subText:   '#6A6458',
+  labelText: '#A09888',
+  cardBorder:'#DDD8CE',
+  mutedBg:   '#EDEAE4',
 };
 
 const H = 48; // horizontal page padding
 
-// ── Styles ────────────────────────────────────────────────────────────────────
-const S = StyleSheet.create({
+// ── Shared styles ──────────────────────────────────────────────────────────────
+const shared = StyleSheet.create({
   page: {
     backgroundColor: C.pageBg,
     fontFamily: 'Helvetica',
-    paddingBottom: 78,   // space for absolute footer
+    paddingBottom: 76,
   },
-
-  // ── Header (black) ──────────────────────────────────────────────────────────
   header: {
     backgroundColor: C.black,
     paddingHorizontal: H,
@@ -91,14 +91,10 @@ const S = StyleSheet.create({
     fontFamily: 'Helvetica-Bold',
     opacity: 0.88,
   },
-
-  // ── Body ────────────────────────────────────────────────────────────────────
   body: {
     paddingHorizontal: H,
-    paddingTop: 28,
+    paddingTop: 26,
   },
-
-  // ── Section label ────────────────────────────────────────────────────────────
   sectionLabel: {
     fontSize: 6.5,
     fontFamily: 'Helvetica-Bold',
@@ -108,212 +104,11 @@ const S = StyleSheet.create({
     marginBottom: 10,
     opacity: 0.9,
   },
-
-  // ── Gold rule between sections ───────────────────────────────────────────────
   goldRule: {
     height: 0.5,
     backgroundColor: C.gold,
     opacity: 0.28,
   },
-
-  // ── Two-column grid ──────────────────────────────────────────────────────────
-  grid: {
-    flexDirection: 'row',
-    gap: 14,
-    marginBottom: 22,
-  },
-  gridCol: {
-    flex: 1,
-  },
-
-  // ── Info card (composite: gold accent bar + content) ─────────────────────────
-  infoCard: {
-    flexDirection: 'row',
-    borderTopWidth: 1,
-    borderRightWidth: 1,
-    borderBottomWidth: 1,
-    borderTopColor: C.cardBorder,
-    borderRightColor: C.cardBorder,
-    borderBottomColor: C.cardBorder,
-    backgroundColor: C.white,
-  },
-  infoAccent: {
-    width: 3,
-    backgroundColor: C.gold,
-    opacity: 0.85,
-  },
-  infoContent: {
-    flex: 1,
-    paddingVertical: 14,
-    paddingHorizontal: 13,
-  },
-
-  // ── Field rows ───────────────────────────────────────────────────────────────
-  row: {
-    flexDirection: 'row',
-    marginBottom: 9,
-    alignItems: 'flex-start',
-  },
-  rowLast: {
-    flexDirection: 'row',
-    marginBottom: 0,
-    alignItems: 'flex-start',
-  },
-  label: {
-    width: 65,
-    fontSize: 7,
-    color: C.labelText,
-    fontFamily: 'Helvetica-Bold',
-    textTransform: 'uppercase',
-    letterSpacing: 0.4,
-    paddingTop: 1.5,
-    flexShrink: 0,
-  },
-  value: {
-    flex: 1,
-    fontSize: 9,
-    color: C.bodyText,
-    lineHeight: 1.6,
-  },
-
-  // ── Package card (dark charcoal) ─────────────────────────────────────────────
-  packageCard: {
-    backgroundColor: C.charcoal,
-    padding: 18,
-    marginBottom: 22,
-  },
-  pkgTopRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 4,
-  },
-  pkgName: {
-    fontSize: 13,
-    fontFamily: 'Helvetica-Bold',
-    color: C.white,
-    flex: 1,
-    letterSpacing: 0.2,
-  },
-  pkgPrice: {
-    fontSize: 18,
-    fontFamily: 'Helvetica-Bold',
-    color: C.gold,
-    marginLeft: 10,
-  },
-  pkgSub: {
-    fontSize: 7.5,
-    color: '#504C44',
-    marginBottom: 14,
-    letterSpacing: 0.2,
-  },
-  pkgRule: {
-    height: 0.5,
-    backgroundColor: C.gold,
-    opacity: 0.15,
-    marginBottom: 13,
-  },
-  pkgGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  pkgItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    width: '50%',
-    marginBottom: 5,
-    paddingRight: 6,
-  },
-  pkgBullet: {
-    width: 10,
-    fontSize: 8,
-    color: C.gold,
-    paddingTop: 1,
-    opacity: 0.75,
-  },
-  pkgItemText: {
-    flex: 1,
-    fontSize: 7.5,
-    color: '#787060',
-    lineHeight: 1.55,
-  },
-
-  // ── Verification block ───────────────────────────────────────────────────────
-  verificationBlock: {
-    backgroundColor: C.black,
-    padding: 22,
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 22,
-  },
-  verLeft: {
-    flex: 1,
-    paddingRight: 20,
-  },
-  verLabel: {
-    fontSize: 6.5,
-    color: '#484440',
-    letterSpacing: 2.5,
-    textTransform: 'uppercase',
-    marginBottom: 11,
-  },
-  verCode: {
-    fontSize: 30,
-    fontFamily: 'Helvetica-Bold',
-    color: C.gold,
-    letterSpacing: 4,
-    marginBottom: 13,
-  },
-  verInstruction: {
-    fontSize: 7.5,
-    color: '#5A5448',
-    lineHeight: 1.7,
-    letterSpacing: 0.2,
-  },
-  verDivider: {
-    width: 0.5,
-    alignSelf: 'stretch',
-    backgroundColor: '#282420',
-    marginRight: 22,
-  },
-  qrWrapper: {
-    alignItems: 'center',
-  },
-  qrImage: {
-    width: 92,
-    height: 92,
-  },
-  qrLabel: {
-    fontSize: 6,
-    color: '#484440',
-    textAlign: 'center',
-    marginTop: 7,
-    letterSpacing: 1.5,
-    textTransform: 'uppercase',
-  },
-
-  // ── Terms note (composite: gold bar + content) ────────────────────────────────
-  termsOuter: {
-    flexDirection: 'row',
-    backgroundColor: C.lightBg,
-  },
-  termsAccent: {
-    width: 2.5,
-    backgroundColor: C.gold,
-    opacity: 0.7,
-  },
-  termsContent: {
-    flex: 1,
-    paddingVertical: 11,
-    paddingHorizontal: 12,
-  },
-  termsText: {
-    fontSize: 7,
-    color: '#7A7268',
-    lineHeight: 1.8,
-  },
-
-  // ── Footer ───────────────────────────────────────────────────────────────────
   footer: {
     position: 'absolute',
     bottom: 0,
@@ -335,9 +130,6 @@ const S = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-start',
   },
-  footerLeft: {
-    flex: 1,
-  },
   footerContact: {
     fontSize: 7,
     color: '#484440',
@@ -348,9 +140,6 @@ const S = StyleSheet.create({
     fontSize: 6.5,
     color: '#383430',
     letterSpacing: 0.2,
-  },
-  footerRight: {
-    alignItems: 'flex-end',
   },
   footerBrand: {
     fontSize: 7,
@@ -367,17 +156,197 @@ const S = StyleSheet.create({
   },
 });
 
-// ── Component ─────────────────────────────────────────────────────────────────
-interface BookingDocumentProps {
-  booking: Booking;
-  qrDataUrl: string;
+// ── Page 1 — confirmation styles ───────────────────────────────────────────────
+const P1 = StyleSheet.create({
+  grid: { flexDirection: 'row', gap: 14, marginBottom: 22 },
+  gridCol: { flex: 1 },
+
+  infoCard: {
+    flexDirection: 'row',
+    borderTopWidth: 1,
+    borderRightWidth: 1,
+    borderBottomWidth: 1,
+    borderTopColor: C.cardBorder,
+    borderRightColor: C.cardBorder,
+    borderBottomColor: C.cardBorder,
+    backgroundColor: C.white,
+  },
+  infoAccent: { width: 3, backgroundColor: C.gold, opacity: 0.85 },
+  infoContent: { flex: 1, paddingVertical: 14, paddingHorizontal: 13 },
+
+  row: { flexDirection: 'row', marginBottom: 9, alignItems: 'flex-start' },
+  rowLast: { flexDirection: 'row', marginBottom: 0, alignItems: 'flex-start' },
+  label: {
+    width: 65,
+    fontSize: 7,
+    color: C.labelText,
+    fontFamily: 'Helvetica-Bold',
+    textTransform: 'uppercase',
+    letterSpacing: 0.4,
+    paddingTop: 1.5,
+    flexShrink: 0,
+  },
+  value: { flex: 1, fontSize: 9, color: C.bodyText, lineHeight: 1.6 },
+
+  // Package dark card
+  packageCard: { backgroundColor: C.charcoal, padding: 18, marginBottom: 22 },
+  pkgTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 },
+  pkgName: { fontSize: 13, fontFamily: 'Helvetica-Bold', color: C.white, flex: 1, letterSpacing: 0.2 },
+  pkgPrice: { fontSize: 18, fontFamily: 'Helvetica-Bold', color: C.gold, marginLeft: 10 },
+  pkgSub: { fontSize: 7.5, color: '#504C44', marginBottom: 14, letterSpacing: 0.2 },
+  pkgRule: { height: 0.5, backgroundColor: C.gold, opacity: 0.15, marginBottom: 13 },
+  pkgGrid: { flexDirection: 'row', flexWrap: 'wrap' },
+  pkgItem: { flexDirection: 'row', alignItems: 'flex-start', width: '50%', marginBottom: 5, paddingRight: 6 },
+  pkgBullet: { width: 10, fontSize: 8, color: C.gold, paddingTop: 1, opacity: 0.75 },
+  pkgItemText: { flex: 1, fontSize: 7.5, color: '#787060', lineHeight: 1.55 },
+
+  // Verification + Company QR — side-by-side in one row
+  verRow: { flexDirection: 'row', gap: 14, marginBottom: 22 },
+
+  // Left: Verification code (dark card)
+  verCard: { flex: 3, backgroundColor: C.black, padding: 20 },
+  verLabel: { fontSize: 6.5, color: '#484440', letterSpacing: 2.5, textTransform: 'uppercase', marginBottom: 10 },
+  verCode: { fontSize: 28, fontFamily: 'Helvetica-Bold', color: C.gold, letterSpacing: 3.5, marginBottom: 12 },
+  verInstruction: { fontSize: 7.5, color: '#5A5448', lineHeight: 1.7, letterSpacing: 0.2 },
+
+  // Right: Company QR (dark-warm card, branded)
+  qrCard: { flex: 2, backgroundColor: C.qrBg, padding: 16, alignItems: 'center', justifyContent: 'center' },
+  qrImage: { width: 90, height: 90, marginBottom: 10 },
+  qrStudioName: { fontSize: 7, fontFamily: 'Helvetica-Bold', color: C.gold, letterSpacing: 1.2, textTransform: 'uppercase', textAlign: 'center', marginBottom: 3 },
+  qrInstruction: { fontSize: 6.5, color: '#5A5448', textAlign: 'center', letterSpacing: 0.5, lineHeight: 1.5 },
+
+  // Terms note
+  termsOuter: { flexDirection: 'row', backgroundColor: C.lightBg },
+  termsAccent: { width: 2.5, backgroundColor: C.gold, opacity: 0.7 },
+  termsContent: { flex: 1, paddingVertical: 11, paddingHorizontal: 12 },
+  termsText: { fontSize: 7, color: '#7A7268', lineHeight: 1.8 },
+});
+
+// ── Page 2 — T&C styles ────────────────────────────────────────────────────────
+const P2 = StyleSheet.create({
+  tcTitle: {
+    fontSize: 13,
+    fontFamily: 'Helvetica-Bold',
+    color: C.gold,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+    marginBottom: 4,
+  },
+  tcSubtitle: {
+    fontSize: 8,
+    color: C.subText,
+    letterSpacing: 0.5,
+    marginBottom: 14,
+  },
+  tcIntro: {
+    fontSize: 7.5,
+    color: C.subText,
+    lineHeight: 1.75,
+    fontFamily: 'Helvetica-Oblique',
+    marginBottom: 16,
+  },
+  tcClauseWrap: { marginBottom: 11 },
+  tcClauseHeading: {
+    fontSize: 7.5,
+    fontFamily: 'Helvetica-Bold',
+    color: C.gold,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+    marginBottom: 4,
+  },
+  tcBody: {
+    fontSize: 7,
+    color: '#4A4640',
+    lineHeight: 1.7,
+  },
+  tcBulletRow: { flexDirection: 'row', alignItems: 'flex-start', marginTop: 3, paddingLeft: 4 },
+  tcBulletMark: { width: 10, fontSize: 7, color: C.gold, paddingTop: 1, opacity: 0.8 },
+  tcBulletText: { flex: 1, fontSize: 7, color: '#4A4640', lineHeight: 1.7 },
+  tcClosing: {
+    fontSize: 7,
+    color: '#5A5448',
+    lineHeight: 1.75,
+    fontFamily: 'Helvetica-Oblique',
+    marginTop: 14,
+    marginBottom: 4,
+  },
+});
+
+// ── Terms parser ───────────────────────────────────────────────────────────────
+interface TermsLine { type: string; text: string }
+
+function parseTerms(): TermsLine[] {
+  const lines = TERMS_AND_CONDITIONS.split('\n');
+  const result: TermsLine[] = [];
+  let lineIndex = 0;
+
+  for (const raw of lines) {
+    const line = raw.trim();
+    if (!line) continue;
+    lineIndex++;
+
+    if (lineIndex === 1) {
+      result.push({ type: 'title', text: line });
+    } else if (lineIndex === 2) {
+      result.push({ type: 'subtitle', text: line });
+    } else if (/^\d{1,2}\.\s+[A-Z]/.test(line)) {
+      result.push({ type: 'heading', text: line });
+    } else if (line.startsWith('•')) {
+      result.push({ type: 'bullet', text: line.replace(/^•\s*/, '') });
+    } else if (lineIndex === 3) {
+      result.push({ type: 'intro', text: line });
+    } else {
+      result.push({ type: 'body', text: line });
+    }
+  }
+  return result;
 }
 
+// ── Component ──────────────────────────────────────────────────────────────────
+interface BookingDocumentProps { booking: Booking; qrDataUrl: string }
+
 export function BookingDocument({ booking, qrDataUrl }: BookingDocumentProps) {
-  const pkg       = getPackageById(booking.package);
+  const pkg      = getPackageById(booking.package);
   const eventDate = format(new Date(booking.event_date), 'dd MMMM yyyy');
   const bookedOn  = format(new Date(booking.created_at), 'dd MMMM yyyy');
   const plural    = (pkg?.photographers ?? 1) > 1 ? 's' : '';
+  const termsLines = parseTerms();
+
+  // ── Shared header renderer ─────────────────────────────────────────────────
+  const renderHeader = (docTitle: string, badgeText: string) => (
+    <View style={shared.header}>
+      <View style={shared.headerRow}>
+        <View>
+          <Text style={shared.studioName}>X-BOSS Photography Studio</Text>
+          <Text style={shared.studioTagline}>Professional Photography  ·  South Africa</Text>
+        </View>
+        <View style={shared.headerBadge}>
+          <Text style={shared.headerBadgeText}>{badgeText}</Text>
+        </View>
+      </View>
+      <View style={shared.headerRule} />
+      <Text style={shared.headerDocTitle}>{docTitle}</Text>
+    </View>
+  );
+
+  // ── Shared footer renderer ─────────────────────────────────────────────────
+  const renderFooter = () => (
+    <View style={shared.footer} fixed>
+      <View style={shared.footerRule} />
+      <View style={shared.footerRow}>
+        <View>
+          <Text style={shared.footerContact}>Tel: +27 75 944 0377  ·  info@xbossphotography.co.za</Text>
+          <Text style={shared.footerClosing}>Thank you for choosing X-BOSS Photography Studio</Text>
+        </View>
+        <View>
+          <Text style={[shared.footerBrand, { textAlign: 'right' }]}>X-BOSS Photography</Text>
+          <Text style={[shared.footerRef, { textAlign: 'right' }]}>
+            Ref: {booking.verification_code}  ·  {bookedOn}
+          </Text>
+        </View>
+      </View>
+    </View>
+  );
 
   return (
     <Document
@@ -385,151 +354,137 @@ export function BookingDocument({ booking, qrDataUrl }: BookingDocumentProps) {
       author="X-BOSS Photography Studio"
       subject="Booking Confirmation"
     >
-      <Page size="A4" style={S.page}>
 
-        {/* ══ HEADER ════════════════════════════════════════════════════ */}
-        <View style={S.header}>
-          <View style={S.headerRow}>
-            <View>
-              <Text style={S.studioName}>X-BOSS Photography Studio</Text>
-              <Text style={S.studioTagline}>Professional Photography  ·  South Africa</Text>
-            </View>
-            <View style={S.headerBadge}>
-              <Text style={S.headerBadgeText}>Confirmed</Text>
-            </View>
-          </View>
-          <View style={S.headerRule} />
-          <Text style={S.headerDocTitle}>Booking Confirmation</Text>
-        </View>
+      {/* ════════════════════════════════════════════════════════════════
+          PAGE 1 — BOOKING CONFIRMATION
+      ════════════════════════════════════════════════════════════════ */}
+      <Page size="A4" style={shared.page}>
 
-        {/* ══ BODY ══════════════════════════════════════════════════════ */}
-        <View style={S.body}>
+        {renderHeader('Booking Confirmation', 'Confirmed')}
 
-          {/* ── CLIENT INFORMATION  +  EVENT DETAILS ── */}
-          <View style={S.grid}>
+        <View style={shared.body}>
 
-            {/* Left column: Client */}
-            <View style={S.gridCol}>
-              <Text style={S.sectionLabel}>Client Information</Text>
-              <View style={S.infoCard}>
-                <View style={S.infoAccent} />
-                <View style={S.infoContent}>
-                  <View style={S.row}>
-                    <Text style={S.label}>Name</Text>
-                    <Text style={S.value}>{booking.full_name}</Text>
+          {/* ── Client Info + Event Details ── */}
+          <View style={P1.grid}>
+
+            <View style={P1.gridCol}>
+              <Text style={shared.sectionLabel}>Client Information</Text>
+              <View style={P1.infoCard}>
+                <View style={P1.infoAccent} />
+                <View style={P1.infoContent}>
+                  <View style={P1.row}>
+                    <Text style={P1.label}>Name</Text>
+                    <Text style={P1.value}>{booking.full_name}</Text>
                   </View>
-                  <View style={S.row}>
-                    <Text style={S.label}>Phone</Text>
-                    <Text style={S.value}>{booking.phone}</Text>
+                  <View style={P1.row}>
+                    <Text style={P1.label}>Phone</Text>
+                    <Text style={P1.value}>{booking.phone}</Text>
                   </View>
-                  <View style={S.row}>
-                    <Text style={S.label}>Email</Text>
-                    <Text style={S.value}>{booking.email}</Text>
+                  <View style={P1.row}>
+                    <Text style={P1.label}>Email</Text>
+                    <Text style={P1.value}>{booking.email}</Text>
                   </View>
-                  <View style={S.rowLast}>
-                    <Text style={S.label}>Location</Text>
-                    <Text style={S.value}>
-                      {booking.area}{'\n'}{booking.province}{'\n'}{booking.country}
-                    </Text>
+                  <View style={P1.rowLast}>
+                    <Text style={P1.label}>Location</Text>
+                    <Text style={P1.value}>{booking.area}{'\n'}{booking.province}{'\n'}{booking.country}</Text>
                   </View>
                 </View>
               </View>
             </View>
 
-            {/* Right column: Event */}
-            <View style={S.gridCol}>
-              <Text style={S.sectionLabel}>Event Details</Text>
-              <View style={S.infoCard}>
-                <View style={S.infoAccent} />
-                <View style={S.infoContent}>
-                  <View style={S.row}>
-                    <Text style={S.label}>Event</Text>
-                    <Text style={S.value}>{booking.event_type}</Text>
+            <View style={P1.gridCol}>
+              <Text style={shared.sectionLabel}>Event Details</Text>
+              <View style={P1.infoCard}>
+                <View style={P1.infoAccent} />
+                <View style={P1.infoContent}>
+                  <View style={P1.row}>
+                    <Text style={P1.label}>Event</Text>
+                    <Text style={P1.value}>{booking.event_type}</Text>
                   </View>
-                  <View style={S.row}>
-                    <Text style={S.label}>Date</Text>
-                    <Text style={S.value}>{eventDate}</Text>
+                  <View style={P1.row}>
+                    <Text style={P1.label}>Date</Text>
+                    <Text style={P1.value}>{eventDate}</Text>
                   </View>
-                  <View style={S.row}>
-                    <Text style={S.label}>Arrival</Text>
-                    <Text style={S.value}>{booking.event_time}</Text>
+                  <View style={P1.row}>
+                    <Text style={P1.label}>Arrival</Text>
+                    <Text style={P1.value}>{booking.event_time}</Text>
                   </View>
-                  <View style={S.rowLast}>
-                    <Text style={S.label}>Booked On</Text>
-                    <Text style={S.value}>{bookedOn}</Text>
+                  <View style={P1.rowLast}>
+                    <Text style={P1.label}>Booked On</Text>
+                    <Text style={P1.value}>{bookedOn}</Text>
                   </View>
                 </View>
               </View>
             </View>
           </View>
 
-          {/* ── GOLD DIVIDER ── */}
-          <View style={S.goldRule} />
+          {/* ── Gold divider ── */}
+          <View style={shared.goldRule} />
 
-          {/* ── SELECTED PACKAGE ── */}
-          <View style={{ marginTop: 22 }}>
-            <Text style={S.sectionLabel}>Selected Package</Text>
-            <View style={S.packageCard}>
-              <View style={S.pkgTopRow}>
-                <Text style={S.pkgName}>{pkg?.name ?? booking.package} Package</Text>
-                <Text style={S.pkgPrice}>{pkg?.priceFormatted ?? ''}</Text>
+          {/* ── Selected Package ── */}
+          <View style={{ marginTop: 20 }}>
+            <Text style={shared.sectionLabel}>Selected Package</Text>
+            <View style={P1.packageCard}>
+              <View style={P1.pkgTopRow}>
+                <Text style={P1.pkgName}>{pkg?.name ?? booking.package} Package</Text>
+                <Text style={P1.pkgPrice}>{pkg?.priceFormatted ?? ''}</Text>
               </View>
-              <Text style={S.pkgSub}>
+              <Text style={P1.pkgSub}>
                 {pkg?.coverage ?? ''}  ·  {pkg?.photographers ?? 1} photographer{plural}  ·  {pkg?.editedImages ?? ''} edited images
               </Text>
-              <View style={S.pkgRule} />
-              <View style={S.pkgGrid}>
+              <View style={P1.pkgRule} />
+              <View style={P1.pkgGrid}>
                 {(pkg?.includes ?? []).map((item, i) => (
-                  <View key={i} style={S.pkgItem}>
-                    <Text style={S.pkgBullet}>›</Text>
-                    <Text style={S.pkgItemText}>{item}</Text>
+                  <View key={i} style={P1.pkgItem}>
+                    <Text style={P1.pkgBullet}>›</Text>
+                    <Text style={P1.pkgItemText}>{item}</Text>
                   </View>
                 ))}
               </View>
             </View>
           </View>
 
-          {/* ── GOLD DIVIDER ── */}
-          <View style={S.goldRule} />
+          {/* ── Gold divider ── */}
+          <View style={shared.goldRule} />
 
-          {/* ── BOOKING VERIFICATION ── */}
-          <View style={{ marginTop: 22 }}>
-            <Text style={S.sectionLabel}>Booking Verification</Text>
-            <View style={S.verificationBlock}>
+          {/* ── Verification Code (left) + Company QR (right) ── */}
+          <View style={{ marginTop: 20 }}>
+            <Text style={shared.sectionLabel}>Booking Verification</Text>
+            <View style={P1.verRow}>
 
-              {/* Left: code + instructions */}
-              <View style={S.verLeft}>
-                <Text style={S.verLabel}>Verification Code</Text>
-                <Text style={S.verCode}>{booking.verification_code}</Text>
-                <Text style={S.verInstruction}>
+              {/* LEFT — verification code */}
+              <View style={P1.verCard}>
+                <Text style={P1.verLabel}>Your Unique Code</Text>
+                <Text style={P1.verCode}>{booking.verification_code}</Text>
+                <Text style={P1.verInstruction}>
                   Present this code at your event check-in.{'\n'}
-                  Scan the QR code to verify this booking online.{'\n'}
-                  Please keep this document in a safe place.
+                  Required for booking verification.{'\n'}
+                  Keep this document in a safe place.
                 </Text>
               </View>
 
-              {/* Vertical divider */}
-              <View style={S.verDivider} />
-
-              {/* Right: QR code */}
-              <View style={S.qrWrapper}>
-                <Image src={qrDataUrl} style={S.qrImage} />
-                <Text style={S.qrLabel}>Scan to verify</Text>
+              {/* RIGHT — company QR */}
+              <View style={P1.qrCard}>
+                <Image src={qrDataUrl} style={P1.qrImage} />
+                <Text style={P1.qrStudioName}>X-BOSS Photography</Text>
+                <Text style={P1.qrInstruction}>
+                  Scan to start your booking{'\n'}or refer a friend
+                </Text>
               </View>
 
             </View>
           </View>
 
-          {/* ── GOLD DIVIDER ── */}
-          <View style={S.goldRule} />
+          {/* ── Gold divider ── */}
+          <View style={shared.goldRule} />
 
-          {/* ── TERMS NOTE ── */}
-          <View style={{ marginTop: 22 }}>
-            <View style={S.termsOuter}>
-              <View style={S.termsAccent} />
-              <View style={S.termsContent}>
-                <Text style={S.termsText}>
-                  By proceeding with this booking you confirmed your acceptance of the X-BOSS Photography Studio Terms and Conditions on {bookedOn}, including the cancellation and rescheduling policy, copyright and image licensing terms, POPIA data protection compliance, and all clauses therein. A copy of the full Terms and Conditions is available on request.
+          {/* ── Terms note ── */}
+          <View style={{ marginTop: 20 }}>
+            <View style={P1.termsOuter}>
+              <View style={P1.termsAccent} />
+              <View style={P1.termsContent}>
+                <Text style={P1.termsText}>
+                  By completing this booking you confirmed acceptance of the X-BOSS Photography Studio Terms and Conditions on {bookedOn} — including the cancellation policy, copyright terms, POPIA compliance, and all clauses therein. The full Terms and Conditions are printed on page 2 of this document.
                 </Text>
               </View>
             </View>
@@ -537,28 +492,67 @@ export function BookingDocument({ booking, qrDataUrl }: BookingDocumentProps) {
 
         </View>
 
-        {/* ══ FOOTER (absolute, fixed) ═══════════════════════════════════ */}
-        <View style={S.footer} fixed>
-          <View style={S.footerRule} />
-          <View style={S.footerRow}>
-            <View style={S.footerLeft}>
-              <Text style={S.footerContact}>
-                Tel: +27 75 944 0377  ·  info@xbossphotography.co.za
-              </Text>
-              <Text style={S.footerClosing}>
-                Thank you for choosing X-BOSS Photography Studio
-              </Text>
-            </View>
-            <View style={S.footerRight}>
-              <Text style={S.footerBrand}>X-BOSS Photography</Text>
-              <Text style={S.footerRef}>
-                Ref: {booking.verification_code}  ·  {bookedOn}
-              </Text>
-            </View>
-          </View>
-        </View>
-
+        {renderFooter()}
       </Page>
+
+      {/* ════════════════════════════════════════════════════════════════
+          PAGE 2 — TERMS & CONDITIONS
+          (react-pdf auto-paginates overflow onto page 3 if needed)
+      ════════════════════════════════════════════════════════════════ */}
+      <Page size="A4" style={shared.page}>
+
+        {renderHeader('Terms & Conditions', 'Page 2')}
+
+        <View style={shared.body}>
+
+          {/* Parse and render each line */}
+          {termsLines.map((item, i) => {
+            if (item.type === 'title') {
+              return <Text key={i} style={P2.tcTitle}>{item.text}</Text>;
+            }
+            if (item.type === 'subtitle') {
+              return <Text key={i} style={P2.tcSubtitle}>{item.text}</Text>;
+            }
+            if (item.type === 'intro') {
+              return (
+                <View key={i}>
+                  <View style={shared.goldRule} />
+                  <Text style={[P2.tcIntro, { marginTop: 12 }]}>{item.text}</Text>
+                  <View style={shared.goldRule} />
+                  <View style={{ marginBottom: 14 }} />
+                </View>
+              );
+            }
+            if (item.type === 'heading') {
+              return (
+                <View key={i} style={P2.tcClauseWrap} wrap={false}>
+                  <Text style={P2.tcClauseHeading}>{item.text}</Text>
+                </View>
+              );
+            }
+            if (item.type === 'bullet') {
+              return (
+                <View key={i} style={P2.tcBulletRow}>
+                  <Text style={P2.tcBulletMark}>›</Text>
+                  <Text style={P2.tcBulletText}>{item.text}</Text>
+                </View>
+              );
+            }
+            // body / closing
+            return (
+              <Text key={i} style={
+                i === termsLines.length - 1 ? P2.tcClosing : P2.tcBody
+              }>
+                {item.text}
+              </Text>
+            );
+          })}
+
+        </View>
+
+        {renderFooter()}
+      </Page>
+
     </Document>
   );
 }
