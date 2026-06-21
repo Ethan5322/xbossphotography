@@ -97,6 +97,24 @@ const shared = StyleSheet.create({
     textTransform: 'uppercase',
     fontFamily: 'Helvetica-Bold',
   },
+  // Single QR in the top-right corner of page 1
+  headerQRWrap: {
+    alignItems: 'center',
+  },
+  headerQR: {
+    width: 56,
+    height: 56,
+    padding: 4,
+    backgroundColor: C.white,
+  },
+  headerQRCaption: {
+    color: C.gold,
+    fontSize: 5,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+    marginTop: 4,
+    fontFamily: 'Helvetica-Bold',
+  },
   headerRule: {
     height: 0.75,
     backgroundColor: C.gold,
@@ -410,15 +428,16 @@ export function BookingDocument({ booking, qrDataUrl }: BookingDocumentProps) {
       ════════════════════════════════════════════════════════════════ */}
       <Page size="A4" style={shared.page}>
 
-        {/* Header */}
+        {/* Header — single QR code in the top-right corner */}
         <View style={shared.header}>
-          <View style={shared.headerRow}>
+          <View style={[shared.headerRow, { alignItems: 'flex-start' }]}>
             <View>
               <Text style={shared.studioName}>X-BOSS Photography Studio</Text>
               <Text style={shared.studioTagline}>Professional Photography  ·  South Africa</Text>
             </View>
-            <View style={shared.headerBadge}>
-              <Text style={shared.headerBadgeText}>Confirmed</Text>
+            <View style={shared.headerQRWrap}>
+              <Image src={qrDataUrl} style={shared.headerQR} />
+              <Text style={shared.headerQRCaption}>Scan to Book</Text>
             </View>
           </View>
           <View style={shared.headerRule} />
@@ -510,29 +529,15 @@ export function BookingDocument({ booking, qrDataUrl }: BookingDocumentProps) {
           {/* ── Gold divider ── */}
           <View style={shared.goldRule} />
 
-          {/* ── Verification Code (left) + Company QR (right) ── */}
+          {/* ── Verification Code (full width) ── */}
           <View style={{ marginTop: 20 }}>
             <Text style={shared.sectionLabel}>Booking Verification</Text>
-            <View style={P1.verRow}>
-
-              <View style={P1.verCard}>
-                <Text style={P1.verLabel}>Your Unique Code</Text>
-                <Text style={P1.verCode}>{booking.verification_code}</Text>
-                <Text style={P1.verInstruction}>
-                  Present this code at your event check-in.{'\n'}
-                  Required for booking verification.{'\n'}
-                  Keep this document in a safe place.
-                </Text>
-              </View>
-
-              <View style={P1.qrCard}>
-                <Image src={qrDataUrl} style={P1.qrImage} />
-                <Text style={P1.qrStudioName}>X-BOSS Photography</Text>
-                <Text style={P1.qrInstruction}>
-                  Scan to start your booking{'\n'}or refer a friend
-                </Text>
-              </View>
-
+            <View style={P1.verCard}>
+              <Text style={P1.verLabel}>Your Unique Code</Text>
+              <Text style={P1.verCode}>{booking.verification_code}</Text>
+              <Text style={P1.verInstruction}>
+                Present this code at your event check-in. It is required for booking verification — please keep this document in a safe place.
+              </Text>
             </View>
           </View>
 

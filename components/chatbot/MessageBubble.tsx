@@ -7,6 +7,22 @@ interface MessageBubbleProps {
   message: ChatMessage;
 }
 
+// Render **bold** segments as bright, prominent text so the client
+// instantly sees the key thing they need to provide.
+function renderRich(text: string) {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return (
+        <strong key={i} className="font-bold text-white">
+          {part.slice(2, -2)}
+        </strong>
+      );
+    }
+    return <span key={i}>{part}</span>;
+  });
+}
+
 export function MessageBubble({ message }: MessageBubbleProps) {
   const isUser = message.role === 'user';
 
@@ -30,7 +46,9 @@ export function MessageBubble({ message }: MessageBubbleProps) {
             : 'bg-[#141210] text-[#CEC8B8] border border-[#252218] px-5 py-4 rounded-2xl rounded-tl-sm shadow-[0_1px_6px_rgba(0,0,0,0.5)]',
         ].join(' ')}
       >
-        <p className="whitespace-pre-wrap">{message.content}</p>
+        <p className="whitespace-pre-wrap">
+          {isUser ? message.content : renderRich(message.content)}
+        </p>
       </div>
 
     </div>

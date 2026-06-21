@@ -44,15 +44,15 @@ function validateInput(step: BookingStep, input: string): { valid: boolean; erro
 function getRetryMessage(step: BookingStep): string {
   switch (step) {
     case 'name':
-      return 'Thank you for reaching out! We just need your full name — both first and last — so we can address your booking correctly. Could you please try again?';
+      return 'Thank you for reaching out! We just need your **full name** — both first and last — so we can address your booking correctly. Could you please try again?';
     case 'phone':
-      return 'No problem at all! We need your phone number with the international dialling code — for example, +27 82 123 4567 for South Africa. Could you try again?';
+      return 'No problem at all! We need your **phone number** with the international dialling code — for example, +27 82 123 4567 for South Africa. Could you try again?';
     case 'email':
-      return "That doesn't look quite right. Could you double-check your email address and try again? We need it to send you your booking confirmation.";
+      return "That doesn't look quite right. Could you double-check your **email address** and try again? We need it to send you your booking confirmation.";
     case 'event_date':
-      return 'We need a valid future date for your event. Could you please share it again? For example: 15 March 2026.';
+      return 'We need a valid future **date** for your event. Could you please share it again? For example: 15 March 2026.';
     case 'event_time':
-      return 'Could you clarify the time? Please use a format like 10:00 or 14:30.';
+      return 'Could you clarify the **arrival time**? Please use a format like 10:00 or 14:30.';
     default:
       return "I'm sorry, something doesn't look right there. Could you please try again?";
   }
@@ -66,10 +66,10 @@ const EVENT_OPENERS: Record<string, string> = {
 };
 
 const PACKAGE_CLOSERS: Record<string, string> = {
-  standard:      'Excellent choice! The Standard Package is perfect for intimate events. Just one final step — please review our Terms and Conditions below before we confirm your booking.',
-  medium:        'A great choice! The Medium Package includes a beautiful printed album you will treasure for years. Please review our Terms and Conditions below to complete your booking.',
-  premium:       'Wonderful! The Premium Package gives you full-day coverage with two photographers — not a single moment will be missed. Please review our Terms and Conditions below.',
-  super_premium: 'A spectacular choice — the ultimate X-BOSS experience! Every moment captured, nothing missed. Please review our Terms and Conditions below to complete your booking.',
+  standard:      'Excellent choice! The Standard Package is perfect for intimate events. Just one final step — please **review your details and accept the Terms** below to confirm your booking.',
+  medium:        'A great choice! The Medium Package includes a beautiful printed album you will treasure for years. Please **review your details and accept the Terms** below to complete your booking.',
+  premium:       'Wonderful! The Premium Package gives you full-day coverage with two photographers — not a single moment will be missed. Please **review your details and accept the Terms** below.',
+  super_premium: 'A spectacular choice — the ultimate X-BOSS experience! Every moment captured, nothing missed. Please **review your details and accept the Terms** below to complete your booking.',
 };
 
 function buildResponse(step: BookingStep, data: CollectedData): string {
@@ -77,36 +77,36 @@ function buildResponse(step: BookingStep, data: CollectedData): string {
 
   switch (step) {
     case 'greeting':
-      return 'Welcome to X-BOSS Photography Studio! I am your dedicated booking assistant, and I am thrilled to help you secure your session with us.\n\nWe will have everything set up in just a few simple steps. To get us started — may I have your full name, please?';
+      return 'Welcome to X-BOSS Photography Studio! I am your dedicated booking assistant, and I am thrilled to help you secure your session with us.\n\nWe will have everything set up in just a few simple steps. To get us started — may I have your **full name**, please?';
 
     case 'name':
-      return `Wonderful to meet you, ${firstName}! We are so glad you have chosen X-BOSS Photography Studio. To make sure we can reach you, could I have your phone number? Please include your international dialling code — for example, +27 for South Africa.`;
+      return `Wonderful to meet you, ${firstName}! We are so glad you have chosen X-BOSS Photography Studio. To make sure we can reach you, could I have your **phone number**? Please include your international dialling code — for example, +27 for South Africa.`;
 
     case 'phone':
-      return 'Perfect, thank you! And which email address should we send your booking confirmation to?';
+      return 'Perfect, thank you! And which **email address** should we send your booking confirmation to?';
 
     case 'email':
-      return `Excellent — your confirmation will be on its way to ${data.email}. Now let us get your location sorted. Which country will your event be taking place in?`;
+      return `Excellent — your confirmation will be on its way to ${data.email}. Now let us get your location sorted. Which **country** will your event be taking place in?`;
 
     case 'country':
-      return `${data.country} — noted! Which province or region within ${data.country} will the event be held?`;
+      return `${data.country} — noted! Which **province or region** within ${data.country} will the event be held?`;
 
     case 'province':
-      return 'And the specific area name or postal code for the venue?';
+      return 'And the specific **area name or postal code** for the venue?';
 
     case 'area':
-      return 'Wonderful. Now for the exciting part — what kind of event are we capturing for you? Please select from the options below.';
+      return 'Wonderful. Now for the exciting part — what kind of **event** are we capturing for you? Please select from the options below.';
 
     case 'event_type': {
       if (data.event_type === 'Custom') {
-        return 'Of course! We love capturing unique occasions. Please describe your event in your own words.';
+        return 'Of course! We love capturing unique occasions. Please describe your **event** in your own words.';
       }
       const opener = EVENT_OPENERS[data.event_type ?? ''] ?? `How exciting — ${data.event_type ?? 'your event'}!`;
-      return `${opener}\n\nWhat date is your event? You can type it in any clear format, for example: 15 March 2026.`;
+      return `${opener}\n\nWhat **date** is your event? Please choose it using the calendar below.`;
     }
 
     case 'custom_event':
-      return `That sounds like a truly unique occasion — we would be honoured to capture it for you!\n\nWhat date is your event?`;
+      return `That sounds like a truly unique occasion — we would be honoured to capture it for you!\n\nWhat **date** is your event? Please choose it using the calendar below.`;
 
     case 'event_date': {
       let displayDate = data.event_date ?? '';
@@ -115,11 +115,11 @@ function buildResponse(step: BookingStep, data: CollectedData): string {
           day: 'numeric', month: 'long', year: 'numeric',
         });
       } catch { /* leave as-is */ }
-      return `${displayDate} is locked in — how exciting! And what time would you like our team to arrive at the venue? For example, 10:00.`;
+      return `${displayDate} is locked in — how exciting! And what **arrival time** would you like our team to be at the venue? Please choose below.`;
     }
 
     case 'event_time':
-      return `Perfect — we will be there at ${data.event_time} and ready to create something truly memorable.\n\nNow let us talk packages! Please have a look at our options below and select the one that suits you best.`;
+      return `Perfect — we will be there at ${data.event_time} and ready to create something truly memorable.\n\nNow let us talk packages! Please choose the **package** that suits you best from the options below.`;
 
     case 'package': {
       const closer = PACKAGE_CLOSERS[data.package ?? ''] ?? 'Great choice! Please review our Terms and Conditions below to complete your booking.';

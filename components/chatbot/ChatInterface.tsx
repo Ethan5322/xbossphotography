@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Send, Download, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { Send, Download, CheckCircle, AlertCircle, Loader2, X } from 'lucide-react';
 import { Aperture } from 'lucide-react';
 import { MessageBubble } from './MessageBubble';
 import { TypingIndicator } from './TypingIndicator';
@@ -46,6 +46,7 @@ export function ChatInterface() {
   const [editing, setEditing] = useState(false);
   const [completed, setCompleted] = useState<CompletedBooking | null>(null);
   const [fatalError, setFatalError] = useState<string | null>(null);
+  const [closed, setClosed] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const initialized = useRef(false);
@@ -210,6 +211,13 @@ export function ChatInterface() {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
   };
 
+  const handleFinish = () => {
+    setClosed(true);
+    // Closes the tab if it was opened by the QR/script; otherwise the
+    // farewell screen below confirms the session has ended.
+    window.close();
+  };
+
   // ── What to render below the messages ─────────────────────────────────────
   const showInput        = ['name', 'phone', 'email', 'country', 'province', 'area', 'custom_event'].includes(step) && !loading;
   const showEventOptions = step === 'event_type' && !loading;
@@ -226,6 +234,26 @@ export function ChatInterface() {
                     : step === 'complete' ? 100 : 0;
   const phaseLabel = PHASES.find((p) => p.steps.includes(step))?.label ?? '';
   const showProgress = !['greeting', 'error'].includes(step) && step !== 'complete';
+
+  // ── Farewell screen (after Finish & Close) ─────────────────────────────────
+  if (closed) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full px-6 text-center animate-fade-in">
+        <div className="w-14 h-14 rounded-2xl border border-gold/30 bg-gold/10 flex items-center justify-center mb-6">
+          <CheckCircle className="w-7 h-7 text-gold" strokeWidth={1.5} />
+        </div>
+        <h2 className="font-playfair text-gold text-xl font-semibold mb-3">
+          Thank You
+        </h2>
+        <p className="text-[#9A9488] text-sm leading-relaxed max-w-xs mb-1">
+          Your booking with X-BOSS Photography Studio is complete.
+        </p>
+        <p className="text-[#524E46] text-xs leading-relaxed max-w-xs">
+          You may now safely close this window. We look forward to capturing your special moments.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full">
@@ -331,6 +359,17 @@ export function ChatInterface() {
                 <Download className="w-4 h-4" strokeWidth={2} />
                 Download Confirmation PDF
               </a>
+
+              <button
+                onClick={handleFinish}
+                className="flex items-center justify-center gap-2 w-full mt-3 py-3 rounded-xl
+                           border border-[#2C2820] text-[#9A9488] font-medium text-sm tracking-wide
+                           hover:border-gold/40 hover:text-gold
+                           transition-all duration-200"
+              >
+                <X className="w-4 h-4" strokeWidth={2} />
+                Finish &amp; Close
+              </button>
             </div>
           </div>
         )}
