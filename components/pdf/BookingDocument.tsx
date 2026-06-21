@@ -33,14 +33,14 @@ const shared = StyleSheet.create({
   page: {
     backgroundColor: C.pageBg,
     fontFamily: 'Helvetica',
-    paddingBottom: 76,
+    paddingBottom: 70, // reserves space so content never overlaps the fixed footer
   },
   // Page 1 header — full size
   header: {
     backgroundColor: C.black,
     paddingHorizontal: H,
-    paddingTop: 28,
-    paddingBottom: 24,
+    paddingTop: 22,
+    paddingBottom: 16,
   },
   // Page 2 header — compact (saves ~45 pt of vertical space)
   header2: {
@@ -54,11 +54,15 @@ const shared = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-end',
   },
+  headerLeft: {
+    flex: 1,
+    paddingRight: 16,
+  },
   studioName: {
     color: C.gold,
-    fontSize: 20,
+    fontSize: 18,
     fontFamily: 'Helvetica-Bold',
-    letterSpacing: 1.5,
+    letterSpacing: 1.2,
     textTransform: 'uppercase',
   },
   studioName2: {
@@ -99,11 +103,12 @@ const shared = StyleSheet.create({
   },
   // Single QR in the top-right corner of page 1
   headerQRWrap: {
+    flexShrink: 0,
     alignItems: 'center',
   },
   headerQR: {
-    width: 56,
-    height: 56,
+    width: 48,
+    height: 48,
     padding: 4,
     backgroundColor: C.white,
   },
@@ -118,7 +123,7 @@ const shared = StyleSheet.create({
   headerRule: {
     height: 0.75,
     backgroundColor: C.gold,
-    marginTop: 18,
+    marginTop: 14,
     opacity: 0.22,
   },
   headerRule2: {
@@ -132,13 +137,13 @@ const shared = StyleSheet.create({
     fontSize: 9.5,
     letterSpacing: 4.5,
     textTransform: 'uppercase',
-    marginTop: 14,
+    marginTop: 10,
     fontFamily: 'Helvetica-Bold',
     opacity: 0.88,
   },
   body: {
     paddingHorizontal: H,
-    paddingTop: 26,
+    paddingTop: 18,
   },
   body2: {
     paddingHorizontal: H,
@@ -207,7 +212,10 @@ const shared = StyleSheet.create({
 
 // ── Page 1 — confirmation styles ───────────────────────────────────────────────
 const P1 = StyleSheet.create({
-  grid: { flexDirection: 'row', gap: 14, marginBottom: 22 },
+  // Consistent vertical rhythm between sections
+  section: { marginTop: 16 },
+
+  grid: { flexDirection: 'row', gap: 14 },
   gridCol: { flex: 1 },
 
   infoCard: {
@@ -221,13 +229,13 @@ const P1 = StyleSheet.create({
     backgroundColor: C.white,
   },
   infoAccent: { width: 3, backgroundColor: C.gold, opacity: 0.85 },
-  infoContent: { flex: 1, paddingVertical: 14, paddingHorizontal: 13 },
+  infoContent: { flex: 1, paddingVertical: 12, paddingHorizontal: 12 },
 
-  row: { flexDirection: 'row', marginBottom: 9, alignItems: 'flex-start' },
+  row: { flexDirection: 'row', marginBottom: 7, alignItems: 'flex-start' },
   rowLast: { flexDirection: 'row', marginBottom: 0, alignItems: 'flex-start' },
   label: {
-    width: 65,
-    fontSize: 7,
+    width: 58,
+    fontSize: 6.5,
     color: C.labelText,
     fontFamily: 'Helvetica-Bold',
     textTransform: 'uppercase',
@@ -235,34 +243,33 @@ const P1 = StyleSheet.create({
     paddingTop: 1.5,
     flexShrink: 0,
   },
-  value: { flex: 1, fontSize: 9, color: C.bodyText, lineHeight: 1.6 },
+  value: { flex: 1, fontSize: 8.5, color: C.bodyText, lineHeight: 1.55 },
 
-  packageCard: { backgroundColor: C.charcoal, padding: 18, marginBottom: 22 },
+  packageCard: { backgroundColor: C.charcoal, padding: 14 },
   pkgTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 },
-  pkgName: { fontSize: 13, fontFamily: 'Helvetica-Bold', color: C.white, flex: 1, letterSpacing: 0.2 },
-  pkgPrice: { fontSize: 18, fontFamily: 'Helvetica-Bold', color: C.gold, marginLeft: 10 },
-  pkgSub: { fontSize: 7.5, color: '#504C44', marginBottom: 14, letterSpacing: 0.2 },
-  pkgRule: { height: 0.5, backgroundColor: C.gold, opacity: 0.15, marginBottom: 13 },
+  pkgName: { fontSize: 12, fontFamily: 'Helvetica-Bold', color: C.white, flex: 1, letterSpacing: 0.2 },
+  pkgPrice: { fontSize: 15, fontFamily: 'Helvetica-Bold', color: C.gold, marginLeft: 10 },
+  pkgSub: { fontSize: 7.5, color: '#7A7060', marginBottom: 9, letterSpacing: 0.2, lineHeight: 1.4 },
+  pkgRule: { height: 0.5, backgroundColor: C.gold, opacity: 0.15, marginBottom: 10 },
   pkgGrid: { flexDirection: 'row', flexWrap: 'wrap' },
-  pkgItem: { flexDirection: 'row', alignItems: 'flex-start', width: '50%', marginBottom: 5, paddingRight: 6 },
-  pkgBullet: { width: 10, fontSize: 8, color: C.gold, paddingTop: 1, opacity: 0.75 },
-  pkgItemText: { flex: 1, fontSize: 7.5, color: '#787060', lineHeight: 1.55 },
+  pkgItem: { flexDirection: 'row', alignItems: 'flex-start', width: '50%', marginBottom: 3.5, paddingRight: 6 },
+  pkgBullet: { width: 9, fontSize: 7.5, color: C.gold, paddingTop: 0.5, opacity: 0.75 },
+  pkgItemText: { flex: 1, fontSize: 7.5, color: '#9A9080', lineHeight: 1.45 },
 
-  verRow: { flexDirection: 'row', gap: 14, marginBottom: 22 },
-  verCard: { flex: 3, backgroundColor: C.black, padding: 20 },
-  verLabel: { fontSize: 6.5, color: '#484440', letterSpacing: 2.5, textTransform: 'uppercase', marginBottom: 10 },
-  verCode: { fontSize: 28, fontFamily: 'Helvetica-Bold', color: C.gold, letterSpacing: 3.5, marginBottom: 12 },
-  verInstruction: { fontSize: 7.5, color: '#5A5448', lineHeight: 1.7, letterSpacing: 0.2 },
+  verRow: { flexDirection: 'row', gap: 14, alignItems: 'stretch' },
+  verCard: { flex: 1, backgroundColor: C.black, paddingVertical: 14, paddingHorizontal: 16, justifyContent: 'center' },
+  verLabel: { fontSize: 6.5, color: '#807868', letterSpacing: 2.5, textTransform: 'uppercase', marginBottom: 6 },
+  verCode: { fontSize: 24, fontFamily: 'Helvetica-Bold', color: C.gold, letterSpacing: 3, marginBottom: 8 },
+  verInstruction: { fontSize: 7.5, color: '#8A8270', lineHeight: 1.6, letterSpacing: 0.2 },
 
-  qrCard: { flex: 2, backgroundColor: C.qrBg, padding: 16, alignItems: 'center', justifyContent: 'center' },
-  qrImage: { width: 90, height: 90, marginBottom: 10 },
-  qrStudioName: { fontSize: 7, fontFamily: 'Helvetica-Bold', color: C.gold, letterSpacing: 1.2, textTransform: 'uppercase', textAlign: 'center', marginBottom: 3 },
-  qrInstruction: { fontSize: 6.5, color: '#5A5448', textAlign: 'center', letterSpacing: 0.5, lineHeight: 1.5 },
-
-  termsOuter: { flexDirection: 'row', backgroundColor: C.lightBg },
-  termsAccent: { width: 2.5, backgroundColor: C.gold, opacity: 0.7 },
-  termsContent: { flex: 1, paddingVertical: 11, paddingHorizontal: 12 },
-  termsText: { fontSize: 7, color: '#7A7268', lineHeight: 1.8 },
+  // ── Acceptance & signature ──
+  signLead: { fontSize: 7.5, color: C.subText, lineHeight: 1.6, marginBottom: 16 },
+  signRow: { flexDirection: 'row', gap: 32 },
+  signRowSpacer: { marginTop: 18 },
+  signCol: { flex: 1 },
+  signLine: { borderBottomWidth: 0.75, borderBottomColor: '#A8A294', height: 24 },
+  signPrinted: { fontSize: 8.5, color: C.bodyText, marginBottom: 2, paddingHorizontal: 2 },
+  signMeta: { fontSize: 6.5, color: C.labelText, letterSpacing: 1, textTransform: 'uppercase', marginTop: 5, fontFamily: 'Helvetica-Bold' },
 });
 
 // ── Page 2 — T&C styles (two-column layout to fit on one page) ─────────────────
@@ -431,7 +438,7 @@ export function BookingDocument({ booking, qrDataUrl }: BookingDocumentProps) {
         {/* Header — single QR code in the top-right corner */}
         <View style={shared.header}>
           <View style={[shared.headerRow, { alignItems: 'flex-start' }]}>
-            <View>
+            <View style={shared.headerLeft}>
               <Text style={shared.studioName}>X-BOSS Photography Studio</Text>
               <Text style={shared.studioTagline}>Professional Photography  ·  South Africa</Text>
             </View>
@@ -447,7 +454,7 @@ export function BookingDocument({ booking, qrDataUrl }: BookingDocumentProps) {
         <View style={shared.body}>
 
           {/* ── Client Info + Event Details ── */}
-          <View style={P1.grid}>
+          <View style={[P1.grid]}>
 
             <View style={P1.gridCol}>
               <Text style={shared.sectionLabel}>Client Information</Text>
@@ -500,11 +507,8 @@ export function BookingDocument({ booking, qrDataUrl }: BookingDocumentProps) {
             </View>
           </View>
 
-          {/* ── Gold divider ── */}
-          <View style={shared.goldRule} />
-
           {/* ── Selected Package ── */}
-          <View style={{ marginTop: 20 }}>
+          <View style={P1.section}>
             <Text style={shared.sectionLabel}>Selected Package</Text>
             <View style={P1.packageCard}>
               <View style={P1.pkgTopRow}>
@@ -526,32 +530,42 @@ export function BookingDocument({ booking, qrDataUrl }: BookingDocumentProps) {
             </View>
           </View>
 
-          {/* ── Gold divider ── */}
-          <View style={shared.goldRule} />
-
-          {/* ── Verification Code (full width) ── */}
-          <View style={{ marginTop: 20 }}>
-            <Text style={shared.sectionLabel}>Booking Verification</Text>
-            <View style={P1.verCard}>
-              <Text style={P1.verLabel}>Your Unique Code</Text>
-              <Text style={P1.verCode}>{booking.verification_code}</Text>
-              <Text style={P1.verInstruction}>
-                Present this code at your event check-in. It is required for booking verification — please keep this document in a safe place.
-              </Text>
+          {/* ── Booking Verification + Acceptance ── */}
+          <View style={P1.section}>
+            <View style={P1.verRow}>
+              <View style={P1.verCard}>
+                <Text style={P1.verLabel}>Your Unique Code</Text>
+                <Text style={P1.verCode}>{booking.verification_code}</Text>
+                <Text style={P1.verInstruction}>
+                  Please present this code at your event check-in. Keep this document safe.
+                </Text>
+              </View>
             </View>
           </View>
 
-          {/* ── Gold divider ── */}
-          <View style={shared.goldRule} />
+          {/* ── Acceptance & Signature ── */}
+          <View style={P1.section}>
+            <Text style={shared.sectionLabel}>Acceptance &amp; Signature</Text>
+            <Text style={P1.signLead}>
+              The client confirms acceptance of the X-BOSS Photography Studio Terms &amp; Conditions (printed on page 2),
+              accepted electronically on {bookedOn}. Please sign below to confirm this booking agreement.
+            </Text>
 
-          {/* ── Terms acceptance note ── */}
-          <View style={{ marginTop: 20 }}>
-            <View style={P1.termsOuter}>
-              <View style={P1.termsAccent} />
-              <View style={P1.termsContent}>
-                <Text style={P1.termsText}>
-                  By completing this booking you confirmed acceptance of the X-BOSS Photography Studio Terms and Conditions on {bookedOn} — including the cancellation policy, copyright terms, POPIA compliance, and all clauses therein. The full Terms and Conditions are printed on page 2 of this document.
-                </Text>
+            <View style={P1.signRow}>
+              <View style={P1.signCol}>
+                <Text style={P1.signPrinted}>{booking.full_name}</Text>
+                <View style={P1.signLine} />
+                <Text style={P1.signMeta}>Client Signature</Text>
+              </View>
+              <View style={P1.signCol}>
+                <Text style={P1.signPrinted}> </Text>
+                <View style={P1.signLine} />
+                <Text style={P1.signMeta}>Date</Text>
+              </View>
+              <View style={P1.signCol}>
+                <Text style={P1.signPrinted}> </Text>
+                <View style={P1.signLine} />
+                <Text style={P1.signMeta}>For X-BOSS Studio</Text>
               </View>
             </View>
           </View>
