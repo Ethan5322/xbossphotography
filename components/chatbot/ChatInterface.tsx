@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Send, Download, CheckCircle, AlertCircle, Loader2, X } from 'lucide-react';
-import { Aperture } from 'lucide-react';
 import { MessageBubble } from './MessageBubble';
 import { TypingIndicator } from './TypingIndicator';
 import { EventTypeOptions, PackageOptions, TermsBox } from './OptionButtons';
@@ -240,13 +239,13 @@ export function ChatInterface() {
         <div className="w-14 h-14 rounded-2xl border border-red-900/40 bg-red-950/20 flex items-center justify-center mb-6">
           <X className="w-7 h-7 text-red-500/70" strokeWidth={1.5} />
         </div>
-        <h2 className="font-playfair text-[#C8C0B0] text-xl font-semibold mb-3">
+        <h2 className="font-playfair text-warmwhite text-xl font-semibold mb-3">
           Booking Cancelled
         </h2>
-        <p className="text-[#9A9488] text-sm leading-relaxed max-w-xs mb-1">
+        <p className="text-warmwhite/80 text-sm leading-relaxed max-w-xs mb-1">
           Your booking has been cancelled. No details were submitted or saved.
         </p>
-        <p className="text-[#524E46] text-xs leading-relaxed max-w-xs">
+        <p className="text-mutedgray/70 text-xs leading-relaxed max-w-xs">
           You may now close this window. If you change your mind, you are always welcome to book with us again.
         </p>
       </div>
@@ -263,10 +262,10 @@ export function ChatInterface() {
         <h2 className="font-playfair text-gold text-xl font-semibold mb-3">
           Thank You
         </h2>
-        <p className="text-[#9A9488] text-sm leading-relaxed max-w-xs mb-1">
+        <p className="text-warmwhite/80 text-sm leading-relaxed max-w-xs mb-1">
           Your booking with X-BOSS Photography Studio is complete.
         </p>
-        <p className="text-[#524E46] text-xs leading-relaxed max-w-xs">
+        <p className="text-mutedgray/70 text-xs leading-relaxed max-w-xs">
           You may now safely close this window. We look forward to capturing your special moments.
         </p>
       </div>
@@ -283,13 +282,13 @@ export function ChatInterface() {
             <span className="text-[10px] text-gold/80 tracking-[0.24em] uppercase font-medium">
               {editing ? 'Editing Details' : phaseLabel}
             </span>
-            <span className="text-[10px] text-[#4A4540] tracking-[0.18em] uppercase tabular-nums">
+            <span className="text-[10px] text-mutedgray/70 tracking-[0.18em] uppercase tabular-nums">
               {progressPct}%
             </span>
           </div>
-          <div className="w-full h-[3px] rounded-full bg-[#1C1914] overflow-hidden">
+          <div className="w-full h-[3px] rounded-full bg-elevated overflow-hidden">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-gold/70 to-gold transition-all duration-700 ease-out"
+              className="h-full rounded-full bg-gradient-to-r from-gold-deep to-gold transition-all duration-700 ease-out"
               style={{ width: `${progressPct}%` }}
             />
           </div>
@@ -305,49 +304,49 @@ export function ChatInterface() {
 
         {loading && (
           <div className="flex items-start gap-3 animate-fade-in">
-            <div className="flex-shrink-0 w-7 h-7 mt-0.5 rounded-lg border border-gold/25 bg-gold/10
+            <div className="flex-shrink-0 w-[34px] h-[34px] rounded-full border border-gold/60 bg-elevated
                             flex items-center justify-center">
-              <Aperture className="w-3.5 h-3.5 text-gold" strokeWidth={1.5} />
+              <span className="font-playfair text-gold text-[12px] font-bold leading-none">XB</span>
             </div>
             <TypingIndicator />
           </div>
         )}
 
         {showEventOptions && (
-          <div className="pl-10">
+          <div className="pl-[46px]">
             <EventTypeOptions onSelect={(v) => handleOptionSelect(v)} disabled={loading} />
           </div>
         )}
         {showPackageOptions && (
-          <div className="pl-10 w-full">
+          <div className="pl-[46px] w-full">
             <PackageOptions onSelect={(v) => handleOptionSelect(v, v.replace('_', ' '))} disabled={loading} />
           </div>
         )}
         {showDatePicker && (
-          <div className="pl-10 w-full pr-1">
+          <div className="pl-[46px] w-full pr-1">
             <DatePicker onSelect={handleDateSelect} disabled={loading} />
           </div>
         )}
         {showTimePicker && (
-          <div className="pl-10 w-full pr-1">
+          <div className="pl-[46px] w-full pr-1">
             <TimePicker onSelect={handleTimeSelect} disabled={loading} />
           </div>
         )}
         {showReview && (
-          <div className="pl-10 w-full pr-1">
+          <div className="pl-[46px] w-full pr-1">
             <ReviewCard data={data} onConfirm={handleConfirmReview} onEdit={handleEdit} disabled={loading} />
           </div>
         )}
         {showTerms && (
-          <div className="pl-10 w-full pr-1">
+          <div className="pl-[46px] w-full pr-1">
             <TermsBox onAccept={handleTermsAccept} onDecline={handleTermsDecline} disabled={loading} />
           </div>
         )}
 
         {/* ── Booking confirmed card ─────────────────────────────── */}
         {step === 'complete' && completed && (
-          <div className="pl-10 animate-slide-up">
-            <div className="bg-[#0F0E0C] border border-[#2C2820] rounded-2xl p-5 max-w-xs">
+          <div className="pl-[46px] animate-slide-up">
+            <div className="bg-[#1A1A1A] border border-gold/[0.18] rounded-[4px] p-5 max-w-xs">
 
               <div className="flex items-center gap-2 mb-4">
                 <CheckCircle className="w-4 h-4 text-gold" strokeWidth={1.5} />
@@ -356,8 +355,8 @@ export function ChatInterface() {
                 </span>
               </div>
 
-              <div className="border border-gold/20 rounded-xl bg-gold/5 px-4 py-4 mb-4 text-center">
-                <p className="text-[9px] text-[#4A4540] tracking-[0.3em] uppercase mb-2">
+              <div className="border border-gold/30 rounded-[4px] bg-gold/[0.06] px-4 py-4 mb-4 text-center">
+                <p className="text-[9px] text-mutedgray/70 tracking-[0.3em] uppercase mb-2">
                   Verification Code
                 </p>
                 <p className="font-playfair text-xl text-gold tracking-[0.18em] font-semibold">
@@ -369,20 +368,20 @@ export function ChatInterface() {
                 href={`/api/pdf?id=${completed.id}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl
-                           bg-gold text-[#0D0C0B] font-semibold text-sm tracking-wide
-                           hover:bg-gold-light hover:shadow-[0_0_20px_rgba(201,168,76,0.3)]
-                           transition-all duration-300"
+                className="flex items-center justify-center gap-2 w-full py-3 rounded-[4px]
+                           bg-gold text-obsidian font-semibold text-sm tracking-wide
+                           hover:bg-gold-light transition-all duration-200"
               >
                 <Download className="w-4 h-4" strokeWidth={2} />
                 Download Confirmation PDF
               </a>
 
               <button
+                type="button"
                 onClick={handleFinish}
-                className="flex items-center justify-center gap-2 w-full mt-3 py-3 rounded-xl
-                           border border-[#2C2820] text-[#9A9488] font-medium text-sm tracking-wide
-                           hover:border-gold/40 hover:text-gold
+                className="flex items-center justify-center gap-2 w-full mt-3 py-3 rounded-[4px]
+                           border border-gold/30 text-mutedgray font-medium text-sm tracking-wide
+                           hover:border-gold/60 hover:text-gold
                            transition-all duration-200"
               >
                 <X className="w-4 h-4" strokeWidth={2} />
@@ -393,8 +392,8 @@ export function ChatInterface() {
         )}
 
         {step === 'error' && fatalError && (
-          <div className="pl-10 animate-slide-up">
-            <div className="flex items-center gap-2.5 bg-[#0F0E0C] border border-red-950 rounded-xl px-4 py-3 max-w-xs">
+          <div className="pl-[46px] animate-slide-up">
+            <div className="flex items-center gap-2.5 bg-[#1A1A1A] border border-red-950 rounded-[4px] px-4 py-3 max-w-xs">
               <AlertCircle className="w-4 h-4 text-red-500/60 flex-shrink-0" strokeWidth={1.5} />
               <p className="text-red-500/60 text-xs leading-relaxed">
                 Booking could not be saved. Please refresh and try again.
@@ -406,9 +405,8 @@ export function ChatInterface() {
         <div ref={bottomRef} />
       </div>
 
-      {/* ── Input area ───────────────────────────────────────────── */}
-      <div className="flex-shrink-0 relative px-5 pb-5 pt-2">
-        <div className="absolute inset-x-0 -top-8 h-8 bg-gradient-to-b from-transparent to-[#0D0C0B] pointer-events-none" />
+      {/* ── Input area — fixed bottom bar ────────────────────────── */}
+      <div className="flex-shrink-0 bg-[#111111] border-t border-gold/15 px-5 py-4">
 
         {showInput ? (
           <div className="flex items-center gap-3">
@@ -421,29 +419,28 @@ export function ChatInterface() {
               placeholder={step === 'phone' ? '+27 82 123 4567' : step === 'email' ? 'you@example.com' : 'Type your reply…'}
               disabled={loading}
               autoFocus
-              className="flex-1 bg-[#141210] border border-[#2C2820] rounded-full
-                         px-5 py-3.5 text-sm text-[#D4CEBD] placeholder-[#3A3530]
-                         focus:outline-none focus:border-gold/45
-                         focus:shadow-[0_0_0_3px_rgba(201,168,76,0.07)]
+              className="flex-1 bg-[#1A1A1A] border border-gold/20 rounded-[4px]
+                         px-4 py-3.5 text-[15px] text-warmwhite placeholder-mutedgray/50
+                         focus:outline-none focus:border-gold/60
                          transition-all duration-200
                          disabled:opacity-40"
             />
             <button
+              type="button"
               onClick={handleSend}
               disabled={!input.trim() || loading}
-              className="flex-shrink-0 w-11 h-11 rounded-full bg-gold
+              className="flex-shrink-0 w-11 h-11 rounded-[6px] bg-gold
                          flex items-center justify-center
-                         hover:bg-gold-light hover:shadow-[0_0_18px_rgba(201,168,76,0.4)]
-                         transition-all duration-200
-                         disabled:opacity-25 disabled:cursor-not-allowed disabled:shadow-none"
+                         hover:bg-gold-light transition-all duration-200
+                         disabled:opacity-25 disabled:cursor-not-allowed"
             >
               {loading
-                ? <Loader2 className="w-4 h-4 text-[#0D0C0B] animate-spin" strokeWidth={2.5} />
-                : <Send className="w-4 h-4 text-[#0D0C0B]" strokeWidth={2.5} />}
+                ? <Loader2 className="w-4 h-4 text-obsidian animate-spin" strokeWidth={2.5} />
+                : <Send className="w-4 h-4 text-obsidian" strokeWidth={2.5} />}
             </button>
           </div>
         ) : (
-          <p className="text-center text-[10px] text-[#3A3530] tracking-[0.22em] uppercase py-2">
+          <p className="text-center text-[10px] text-mutedgray/50 tracking-[0.22em] uppercase py-2">
             {step === 'complete'    ? '✦  Booking confirmed  —  save your verification code  ✦'
             : step === 'processing'  ? 'Securing your booking…'
             : step === 'error'       ? 'Session ended'

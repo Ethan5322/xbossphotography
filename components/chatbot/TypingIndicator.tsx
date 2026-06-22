@@ -2,8 +2,10 @@
 
 export function TypingIndicator() {
   return (
-    <div className="flex items-center gap-[5px] px-5 py-4 rounded-2xl rounded-tl-sm
-                    bg-[#141210] border border-[#252218] shadow-[0_1px_6px_rgba(0,0,0,0.5)] w-fit">
+    <div
+      className="flex items-center gap-[5px] px-5 py-4 bg-[#1A1A1A] border border-gold/[0.18] w-fit"
+      style={{ borderRadius: '4px 18px 18px 18px' }}
+    >
       {[0, 1, 2].map((i) => (
         <span
           key={i}

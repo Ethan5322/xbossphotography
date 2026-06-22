@@ -25,34 +25,34 @@ export function DatePicker({ onSelect, disabled }: DatePickerProps) {
 
   return (
     <div className="w-full mt-3 animate-fade-in">
-      <div className="rounded-2xl border border-[#252218] bg-[#0F0E0C] p-4">
+      <div className="rounded-[4px] border border-gold/[0.18] bg-[#1A1A1A] p-4">
         <div className="flex items-center gap-2 mb-3">
           <Calendar className="w-4 h-4 text-gold" strokeWidth={1.5} />
-          <span className="text-[11px] text-[#7A7060] tracking-[0.18em] uppercase">Select your event date</span>
+          <span className="text-[11px] text-mutedgray tracking-[0.18em] uppercase">Select your event date</span>
         </div>
 
         <input
           type="date"
+          title="Event date"
+          aria-label="Event date"
           min={minDate}
           value={value}
           disabled={disabled}
           onChange={(e) => setValue(e.target.value)}
-          className="w-full bg-[#141210] border border-[#2C2820] rounded-xl
-                     px-4 py-3 text-sm text-[#D4CEBD]
-                     focus:outline-none focus:border-gold/45
-                     focus:shadow-[0_0_0_3px_rgba(201,168,76,0.07)]
-                     transition-all duration-200
-                     [color-scheme:dark]
+          className="w-full bg-surface border border-gold/20 rounded-[4px]
+                     px-4 py-3 text-sm text-warmwhite
+                     focus:outline-none focus:border-gold/60
+                     transition-all duration-200 [color-scheme:dark]
                      disabled:opacity-40"
         />
 
         <button
+          type="button"
           onClick={confirm}
           disabled={disabled || !value}
-          className="mt-3 w-full flex items-center justify-center gap-2 py-3 rounded-xl
-                     bg-gold text-[#0D0C0B] font-semibold text-sm tracking-wide
-                     hover:bg-gold-light hover:shadow-[0_0_20px_rgba(201,168,76,0.28)]
-                     transition-all duration-200
+          className="mt-3 w-full flex items-center justify-center gap-2 py-3 rounded-[4px]
+                     bg-gold text-obsidian font-semibold text-sm tracking-wide
+                     hover:bg-gold-light transition-all duration-200
                      disabled:opacity-30 disabled:cursor-not-allowed"
         >
           <Check className="w-4 h-4" strokeWidth={2.5} />
@@ -83,21 +83,22 @@ export function TimePicker({ onSelect, disabled }: TimePickerProps) {
 
   return (
     <div className="w-full mt-3 animate-fade-in">
-      <div className="rounded-2xl border border-[#252218] bg-[#0F0E0C] p-4">
+      <div className="rounded-[4px] border border-gold/[0.18] bg-[#1A1A1A] p-4">
         <div className="flex items-center gap-2 mb-3">
           <Clock className="w-4 h-4 text-gold" strokeWidth={1.5} />
-          <span className="text-[11px] text-[#7A7060] tracking-[0.18em] uppercase">Choose an arrival time</span>
+          <span className="text-[11px] text-mutedgray tracking-[0.18em] uppercase">Choose an arrival time</span>
         </div>
 
         <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
           {PRESET_TIMES.map((t) => (
             <button
               key={t}
+              type="button"
               onClick={() => onSelect(t, formatTime(t))}
               disabled={disabled}
-              className="py-2.5 rounded-lg text-[13px] font-medium
-                         border border-[#2C2820] text-[#8A8070] bg-transparent
-                         hover:border-gold/50 hover:text-gold hover:bg-gold/5
+              className="py-2.5 rounded-[4px] text-[13px]
+                         border border-gold/40 text-warmwhite bg-transparent
+                         hover:bg-gold hover:text-obsidian hover:font-semibold hover:border-gold
                          transition-all duration-200
                          disabled:opacity-40 disabled:cursor-not-allowed"
             >
@@ -106,23 +107,26 @@ export function TimePicker({ onSelect, disabled }: TimePickerProps) {
           ))}
         </div>
 
-        <div className="flex items-center gap-2 mt-4 pt-3 border-t border-[#1C1914]">
-          <span className="text-[10px] text-[#4A4540] tracking-[0.18em] uppercase shrink-0">Or custom</span>
+        <div className="flex items-center gap-2 mt-4 pt-3 border-t border-gold/10">
+          <span className="text-[10px] text-mutedgray/70 tracking-[0.18em] uppercase shrink-0">Or custom</span>
           <input
             type="time"
+            title="Custom arrival time"
+            aria-label="Custom arrival time"
             value={custom}
             disabled={disabled}
             onChange={(e) => setCustom(e.target.value)}
-            className="flex-1 bg-[#141210] border border-[#2C2820] rounded-lg
-                       px-3 py-2 text-sm text-[#D4CEBD]
-                       focus:outline-none focus:border-gold/45
+            className="flex-1 bg-surface border border-gold/20 rounded-[4px]
+                       px-3 py-2 text-sm text-warmwhite
+                       focus:outline-none focus:border-gold/60
                        transition-all duration-200 [color-scheme:dark]
                        disabled:opacity-40"
           />
           <button
+            type="button"
             onClick={() => custom && onSelect(custom, formatTime(custom))}
             disabled={disabled || !custom}
-            className="px-4 py-2 rounded-lg bg-gold text-[#0D0C0B] font-semibold text-sm
+            className="px-4 py-2 rounded-[4px] bg-gold text-obsidian font-semibold text-sm
                        hover:bg-gold-light transition-all duration-200
                        disabled:opacity-30 disabled:cursor-not-allowed"
           >

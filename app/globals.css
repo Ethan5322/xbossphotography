@@ -3,24 +3,37 @@
 @tailwind utilities;
 
 :root {
-  --gold: #C9A84C;
-  --gold-light: #E8C96B;
+  --gold: #C8922A;
+  --gold-light: #E0A838;
 }
 
 html, body {
   height: 100%;
 }
 
-/* Warm premium page background */
+/* Dark Luxury Editorial — obsidian base with a soft gold glow */
 .page-bg {
-  background: radial-gradient(ellipse at 50% 0%, #1C1914 0%, #0D0C0B 55%);
+  position: relative;
+  background-color: #0A0A0A;
+  background-image: radial-gradient(ellipse at 50% 40%, rgba(200, 146, 42, 0.04) 0%, transparent 65%);
+}
+
+/* 3% grain/noise overlay for a crafted, tactile feel */
+.page-bg::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* Refined scrollbar */
 ::-webkit-scrollbar { width: 3px; height: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #2A2720; border-radius: 999px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(201, 168, 76, 0.35); }
+::-webkit-scrollbar-thumb:hover { background: rgba(200, 146, 42, 0.35); }
 
 /* Animations */
 @keyframes pulseDot {

@@ -44,28 +44,29 @@ export function ReviewCard({ data, onConfirm, onEdit, disabled }: ReviewCardProp
 
   return (
     <div className="w-full mt-3 animate-fade-in">
-      <div className="rounded-2xl border border-[#252218] bg-[#0F0E0C] overflow-hidden">
+      <div className="rounded-[4px] border border-gold/[0.18] bg-[#1A1A1A] overflow-hidden">
 
         {/* Header */}
-        <div className="flex items-center gap-2 px-5 py-4 border-b border-[#1C1914] bg-[#0C0B09]">
+        <div className="flex items-center gap-2 px-5 py-4 border-b border-gold/[0.18] bg-surface">
           <ShieldCheck className="w-4 h-4 text-gold" strokeWidth={1.5} />
-          <span className="text-gold text-[11px] font-semibold tracking-[0.2em] uppercase">
+          <span className="font-playfair text-gold text-[13px] tracking-wide">
             Review Your Booking
           </span>
         </div>
 
         {/* Detail rows */}
-        <div className="divide-y divide-[#161410]">
+        <div className="divide-y divide-white/[0.04]">
           {rows.map((r) => (
             <div key={r.label} className="flex items-center justify-between gap-3 px-5 py-3 group">
               <div className="min-w-0">
-                <p className="text-[9px] text-[#4A4540] tracking-[0.22em] uppercase mb-0.5">{r.label}</p>
-                <p className="text-[13px] text-[#C8C0B0] truncate">{r.value}</p>
+                <p className="text-[9px] text-mutedgray/70 tracking-[0.22em] uppercase mb-0.5">{r.label}</p>
+                <p className="text-[14px] text-warmwhite truncate">{r.value}</p>
               </div>
               <button
+                type="button"
                 onClick={() => onEdit(r.step)}
                 disabled={disabled}
-                className="flex items-center gap-1 shrink-0 text-[10px] text-[#504A42] tracking-wide uppercase
+                className="flex items-center gap-1 shrink-0 text-[10px] text-mutedgray/70 tracking-wide uppercase
                            hover:text-gold transition-colors duration-200 disabled:opacity-40"
               >
                 <Pencil className="w-3 h-3" strokeWidth={1.8} />
@@ -75,23 +76,24 @@ export function ReviewCard({ data, onConfirm, onEdit, disabled }: ReviewCardProp
           ))}
 
           {/* Package row — highlighted */}
-          <div className="flex items-center justify-between gap-3 px-5 py-4 bg-[#0C0B09]">
+          <div className="flex items-center justify-between gap-3 px-5 py-4 bg-surface">
             <div className="min-w-0">
-              <p className="text-[9px] text-[#4A4540] tracking-[0.22em] uppercase mb-1">Package</p>
-              <p className="text-[14px] text-[#C8C0B0] font-medium truncate">
+              <p className="text-[9px] text-mutedgray/70 tracking-[0.22em] uppercase mb-1">Package</p>
+              <p className="text-[15px] text-warmwhite font-playfair truncate">
                 {pkg?.name ?? data.package ?? '—'}
-                {pkg && <span className="text-gold font-semibold"> · {pkg.priceFormatted}</span>}
+                {pkg && <span className="text-gold"> · {pkg.priceFormatted}</span>}
               </p>
               {pkg && (
-                <p className="text-[11px] text-[#524E46] mt-0.5">
+                <p className="text-[11px] text-mutedgray mt-0.5">
                   {pkg.coverage} · {pkg.photographers} photographer{pkg.photographers > 1 ? 's' : ''} · {pkg.editedImages} images
                 </p>
               )}
             </div>
             <button
+              type="button"
               onClick={() => onEdit('package')}
               disabled={disabled}
-              className="flex items-center gap-1 shrink-0 text-[10px] text-[#504A42] tracking-wide uppercase
+              className="flex items-center gap-1 shrink-0 text-[10px] text-mutedgray/70 tracking-wide uppercase
                          hover:text-gold transition-colors duration-200 disabled:opacity-40"
             >
               <Pencil className="w-3 h-3" strokeWidth={1.8} />
@@ -101,18 +103,18 @@ export function ReviewCard({ data, onConfirm, onEdit, disabled }: ReviewCardProp
         </div>
 
         {/* Confirm */}
-        <div className="p-4 border-t border-[#1C1914]">
+        <div className="p-4 border-t border-gold/[0.18]">
           <button
+            type="button"
             onClick={onConfirm}
             disabled={disabled}
-            className="w-full py-3.5 rounded-xl bg-gold text-[#0D0C0B] font-semibold text-sm tracking-wide
-                       hover:bg-gold-light hover:shadow-[0_0_20px_rgba(201,168,76,0.3)]
-                       transition-all duration-200
+            className="w-full py-3.5 rounded-[4px] bg-gold text-obsidian font-semibold text-sm tracking-wide
+                       hover:bg-gold-light transition-all duration-200
                        disabled:opacity-30 disabled:cursor-not-allowed"
           >
             Confirm &amp; Continue to Terms
           </button>
-          <p className="text-center text-[10px] text-[#3A3530] tracking-[0.18em] uppercase mt-3">
+          <p className="text-center text-[10px] text-mutedgray/60 tracking-[0.18em] uppercase mt-3">
             Please verify all details are correct
           </p>
         </div>

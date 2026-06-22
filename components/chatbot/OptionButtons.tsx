@@ -12,15 +12,15 @@ interface EventOptionsProps {
 
 export function EventTypeOptions({ onSelect, disabled }: EventOptionsProps) {
   return (
-    <div className="flex flex-wrap gap-2 mt-3 animate-fade-in">
+    <div className="flex flex-wrap gap-2.5 mt-3 animate-fade-in">
       {EVENT_TYPES.map((type) => (
         <button
           key={type}
           onClick={() => onSelect(type)}
           disabled={disabled}
-          className="px-5 py-2.5 rounded-full text-[13px] font-medium tracking-wide
-                     border border-[#2C2820] text-[#7A7060] bg-transparent
-                     hover:border-gold/50 hover:text-gold hover:bg-gold/5
+          className="px-5 py-2.5 rounded-[4px] text-[14px] tracking-wide
+                     border border-gold/50 text-warmwhite bg-transparent
+                     hover:bg-gold hover:text-obsidian hover:font-semibold hover:border-gold
                      transition-all duration-200
                      disabled:opacity-40 disabled:cursor-not-allowed"
         >
@@ -44,22 +44,21 @@ export function PackageOptions({ onSelect, disabled }: PackageOptionsProps) {
           key={pkg.id}
           onClick={() => onSelect(pkg.id)}
           disabled={disabled}
-          className="text-left p-4 rounded-xl border border-[#252218] bg-[#0F0E0C]
-                     hover:border-gold/40 hover:bg-[#161410]
-                     hover:shadow-[0_0_24px_rgba(201,168,76,0.07)]
-                     transition-all duration-250
+          className="text-left p-4 rounded-[4px] border border-gold/[0.18] bg-[#1A1A1A]
+                     hover:border-gold/60 hover:bg-elevated
+                     transition-all duration-200
                      disabled:opacity-40 disabled:cursor-not-allowed group"
         >
           <div className="flex items-start justify-between mb-2">
-            <span className="font-medium text-[#C8C0B0] text-sm group-hover:text-gold transition-colors duration-200">
+            <span className="font-playfair text-warmwhite text-[15px] group-hover:text-gold transition-colors duration-200">
               {pkg.name}
             </span>
-            <span className="text-gold font-bold text-sm ml-3 shrink-0">{pkg.priceFormatted}</span>
+            <span className="text-gold font-semibold text-sm ml-3 shrink-0">{pkg.priceFormatted}</span>
           </div>
-          <p className="text-[#524E46] text-xs mb-2 leading-relaxed">
+          <p className="text-mutedgray text-xs mb-2 leading-relaxed">
             {pkg.coverage} · {pkg.photographers} photographer{pkg.photographers > 1 ? 's' : ''} · {pkg.editedImages} images
           </p>
-          <p className="text-[#706860] text-xs italic leading-relaxed">{pkg.highlight}</p>
+          <p className="text-mutedgray/80 text-xs italic leading-relaxed">{pkg.highlight}</p>
         </button>
       ))}
     </div>
@@ -76,13 +75,13 @@ export function TermsBox({ onAccept, onDecline, disabled }: TermsBoxProps) {
   return (
     <div className="w-full mt-3 animate-fade-in">
       <div
-        className="h-48 overflow-y-auto rounded-xl border border-[#252218] bg-[#0C0B09] p-4
-                   text-xs text-[#605A50] leading-[1.85] whitespace-pre-wrap"
+        className="h-48 overflow-y-auto rounded-[4px] border border-gold/[0.18] bg-surface p-4
+                   text-xs text-mutedgray leading-[1.85] whitespace-pre-wrap"
       >
         {TERMS_AND_CONDITIONS}
       </div>
 
-      <p className="text-[10px] text-[#3A3530] mt-1.5 text-center tracking-[0.2em] uppercase">
+      <p className="text-[10px] text-mutedgray/60 mt-2 text-center tracking-[0.2em] uppercase">
         Please read the terms above
       </p>
 
@@ -90,9 +89,8 @@ export function TermsBox({ onAccept, onDecline, disabled }: TermsBoxProps) {
         <button
           onClick={onAccept}
           disabled={disabled}
-          className="flex-1 py-3 rounded-xl bg-gold text-[#0D0C0B] font-semibold text-sm tracking-wide
-                     hover:bg-gold-light hover:shadow-[0_0_20px_rgba(201,168,76,0.28)]
-                     transition-all duration-200
+          className="flex-1 py-3 rounded-[4px] bg-gold text-obsidian font-semibold text-sm tracking-wide
+                     hover:bg-gold-light transition-all duration-200
                      disabled:opacity-40 disabled:cursor-not-allowed"
         >
           I Accept the Terms &amp; Conditions
@@ -100,8 +98,8 @@ export function TermsBox({ onAccept, onDecline, disabled }: TermsBoxProps) {
         <button
           onClick={onDecline}
           disabled={disabled}
-          className="px-5 py-3 rounded-xl border border-[#252218] text-[#504A42] text-sm
-                     hover:border-red-900/70 hover:text-red-500/60
+          className="px-5 py-3 rounded-[4px] border border-gold/30 text-mutedgray text-sm
+                     hover:border-red-900/70 hover:text-red-500/70
                      transition-all duration-200
                      disabled:opacity-40 disabled:cursor-not-allowed"
         >
