@@ -2,25 +2,28 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { generateVerificationCode } from '@/lib/verification';
 import { sendWhatsAppNotification } from '@/lib/whatsapp';
+import { rateLimit, getClientIp } from '@/lib/rate-limit';
+import { validateBookingPayload } from '@/lib/validation';
 import type { CreateBookingPayload, Booking } from '@/types/booking';
 
 export async function POST(req: NextRequest) {
   try {
-    const payload: CreateBookingPayload = await req.json();
-
-    const required: (keyof CreateBookingPayload)[] = [
-      'full_name', 'phone', 'email', 'country', 'province', 'area',
-      'event_type', 'event_date', 'event_time', 'package', 'terms_accepted',
-    ];
-
-    for (const field of required) {
-      if (!payload[field]) {
-        return NextResponse.json({ error: `Missing required field: ${field}` }, { status: 400 });
-      }
+    // Spam / abuse protection — max 5 bookings per IP per 10 minutes
+    const ip = getClientIp(req);
+    const rl = rateLimit(`booking:${ip}`, 5, 10 * 60 * 1000);
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { error: 'Too many booking attempts. Please try again in a few minutes.' },
+        { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } },
+      );
     }
 
-    if (!payload.terms_accepted) {
-      return NextResponse.json({ error: 'Terms and conditions must be accepted.' }, { status: 400 });
+    const payload: CreateBookingPayload = await req.json();
+
+    // Server-side validation (the source of truth — client checks are bypassable)
+    const check = validateBookingPayload(payload);
+    if (!check.valid) {
+      return NextResponse.json({ error: check.error }, { status: 400 });
     }
 
     const supabase = createServerSupabaseClient();
