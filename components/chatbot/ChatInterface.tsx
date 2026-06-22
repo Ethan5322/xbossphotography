@@ -286,7 +286,14 @@ export function ChatInterface() {
               {progressPct}%
             </span>
           </div>
-          <div className="w-full h-[3px] rounded-full bg-elevated overflow-hidden">
+          <div
+            className="w-full h-[3px] rounded-full bg-elevated overflow-hidden"
+            role="progressbar"
+            aria-label="Booking progress"
+            aria-valuenow={progressPct}
+            aria-valuemin={0}
+            aria-valuemax={100}
+          >
             <div
               className="h-full rounded-full bg-gradient-to-r from-gold-deep to-gold transition-all duration-700 ease-out"
               style={{ width: `${progressPct}%` }}
@@ -296,7 +303,7 @@ export function ChatInterface() {
       )}
 
       {/* ── Messages ─────────────────────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto px-5 pt-6 pb-4 space-y-5">
+      <div className="flex-1 overflow-y-auto px-5 pt-6 pb-4 space-y-5" role="log" aria-live="polite" aria-label="Conversation">
 
         {messages.map((msg) => (
           <MessageBubble key={msg.id} message={msg} />
@@ -429,6 +436,7 @@ export function ChatInterface() {
               type="button"
               onClick={handleSend}
               disabled={!input.trim() || loading}
+              aria-label="Send message"
               className="flex-shrink-0 w-11 h-11 rounded-[6px] bg-gold
                          flex items-center justify-center
                          hover:bg-gold-light transition-all duration-200

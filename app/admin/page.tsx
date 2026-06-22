@@ -58,11 +58,12 @@ export default function AdminLoginPage() {
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">
+              <label htmlFor="admin-password" className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">
                 Admin Password
               </label>
               <div className="relative">
                 <input
+                  id="admin-password"
                   type={showPw ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => { setPassword(e.target.value); setError(null); }}
@@ -76,6 +77,7 @@ export default function AdminLoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPw((v) => !v)}
+                  aria-label={showPw ? 'Hide password' : 'Show password'}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
                 >
                   {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -84,7 +86,7 @@ export default function AdminLoginPage() {
             </div>
 
             {error && (
-              <p className="text-red-400 text-xs bg-red-900/20 border border-red-800 rounded-lg px-3 py-2">
+              <p role="alert" className="text-red-400 text-xs bg-red-900/20 border border-red-800 rounded-lg px-3 py-2">
                 {error}
               </p>
             )}
