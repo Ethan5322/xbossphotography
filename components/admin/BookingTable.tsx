@@ -3,7 +3,7 @@
 import { format } from 'date-fns';
 import type { Booking } from '@/types/booking';
 import { getPackageDisplayName } from '@/lib/packages';
-import { User, Phone, Mail, MapPin, Package, Clock } from 'lucide-react';
+import { User, Phone, Mail, MapPin, Package, Clock, Download } from 'lucide-react';
 
 interface BookingTableProps {
   bookings: Booking[];
@@ -80,6 +80,21 @@ function BookingRow({ booking, showDate }: { booking: Booking; showDate: boolean
           {booking.status}
         </span>
       </td>
+
+      <td className="px-4 py-4">
+        <a
+          href={`/api/pdf?id=${booking.id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Download confirmation PDF"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-700
+                     text-xs text-gray-300 hover:border-yellow-500/50 hover:text-yellow-500
+                     transition-colors whitespace-nowrap"
+        >
+          <Download className="w-3.5 h-3.5" />
+          PDF
+        </a>
+      </td>
     </tr>
   );
 }
@@ -104,6 +119,7 @@ export function BookingTable({ bookings, emptyMessage = 'No bookings found.', sh
             <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Event</th>
             <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden lg:table-cell">Package</th>
             <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">PDF</th>
           </tr>
         </thead>
         <tbody>

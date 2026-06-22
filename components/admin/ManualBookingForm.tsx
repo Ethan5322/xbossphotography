@@ -30,7 +30,7 @@ const EMPTY: FormData = {
 };
 
 interface ManualBookingFormProps {
-  onSuccess: (code: string) => void;
+  onSuccess: (booking: { id: string; verification_code: string }) => void;
 }
 
 export function ManualBookingForm({ onSuccess }: ManualBookingFormProps) {
@@ -78,7 +78,7 @@ export function ManualBookingForm({ onSuccess }: ManualBookingFormProps) {
 
       const data = await res.json();
       setForm(EMPTY);
-      onSuccess(data.verification_code);
+      onSuccess({ id: data.id, verification_code: data.verification_code });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred.');
     } finally {
