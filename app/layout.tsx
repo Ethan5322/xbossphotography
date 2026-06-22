@@ -15,17 +15,48 @@ const playfair = Playfair_Display({
   display: 'swap',
 });
 
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://xbossphotography.vercel.app';
+
 export const metadata: Metadata = {
-  title: 'X-BOSS Photography Studio — Book Your Session',
-  description: 'Book a professional photography session with X-BOSS Photography Studio. Serving South Africa with premium event photography.',
-  icons: { icon: '/favicon.ico' },
+  metadataBase: new URL(baseUrl),
+  title: {
+    default: 'X-BOSS Photography Studio — Book Your Session',
+    template: '%s · X-BOSS Photography Studio',
+  },
+  description:
+    'Book a professional photography session with X-BOSS Photography Studio — premium wedding and event photography across South Africa. Confirm your booking in minutes.',
+  applicationName: 'X-BOSS Photography Studio',
+  keywords: [
+    'X-BOSS Photography',
+    'photographer South Africa',
+    'wedding photographer',
+    'event photography',
+    'book a photographer',
+    'photography studio',
+  ],
+  authors: [{ name: 'X-BOSS Photography Studio' }],
+  creator: 'X-BOSS Photography Studio',
+  openGraph: {
+    type: 'website',
+    locale: 'en_ZA',
+    url: baseUrl,
+    siteName: 'X-BOSS Photography Studio',
+    title: 'X-BOSS Photography Studio — Book Your Session',
+    description:
+      'Premium wedding and event photography across South Africa. Book your session in minutes.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'X-BOSS Photography Studio — Book Your Session',
+    description: 'Premium wedding and event photography across South Africa.',
+  },
+  robots: { index: true, follow: true },
 };
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  themeColor: '#0A0A0A',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
